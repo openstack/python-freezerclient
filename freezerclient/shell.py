@@ -226,7 +226,6 @@ class FreezerShell(App):
 
 
 def main(argv=sys.argv[1:]):
-    print('hola') 
     return FreezerShell().run(argv)
 
 
