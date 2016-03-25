@@ -79,7 +79,8 @@ class FreezerShell(App):
         )
 
     def build_option_parser(self, description, version):
-        parser = super(FreezerShell, self).build_option_parser(description, version)
+        parser = super(FreezerShell, self).build_option_parser(description,
+                                                               version)
         parser.add_argument(
             '--os-auth-url',
             dest='os_auth_url',

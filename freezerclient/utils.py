@@ -130,3 +130,14 @@ def create_headers_for_request(token):
         'Content-Type': 'application/json',
         'Accept': 'application/json'
     }
+
+
+def prepare_search(search_term):
+    """Return a search term that the api can use to query the db
+    :param search_term: string
+    :return: search dict
+    """
+    if search_term:
+        return {"match": [{"_all": search_term}, ], }
+    return {}
+

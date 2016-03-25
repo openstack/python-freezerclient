@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import datetime
 import logging
 
 from pprint import pformat
@@ -20,6 +21,7 @@ from cliff.lister import Lister
 from cliff.show import ShowOne
 
 from freezerclient import exceptions
+from freezerclient.utils import prepare_search
 
 
 logging = logging.getLogger(__name__)
@@ -35,10 +37,11 @@ class BackupShow(ShowOne):
 
     def take_action(self, parsed_args):
         # due to the fact that a backup_id is composed of several strings
-        # some of them may include a slash "/" so it will never find the correct
-        # backup, so the workaround for this version is to use the backup_uuid as
-        # a filter for the search. this won't work when the user wants to delete a
-        # backup, but that functionality is yet to be provided by the api.
+        # some of them may include a slash "/" so it will never find the
+        # correct backup, so the workaround for this version is to use the
+        # backup_uuid as a filter for the search. this won't work when the
+        # user wants to delete a backup, but that functionality is yet to be
+        # provided by the api.
         search = {"match": [{"backup_uuid": parsed_args.backup_uuid}, ], }
         backup = self.app.client.backups.list(search=search)
 
@@ -88,11 +91,17 @@ class BackupList(Lister):
         return parser
 
     def take_action(self, parsed_args):
+        search = prepare_search(parsed_args.search)
+
         backups = self.app.client.backups.list(limit=parsed_args.limit,
                                                offset=parsed_args.offset,
-                                               search=parsed_args.search)
-        return (('Backup ID', 'Backup UUID'),
-                ((backup.get('backup_id'),
-                  backup.get('backup_uuid'),
-                  ) for backup in backups))
+                                               search=search)
+        return (('Backup UUID', 'Hostname', 'Path', 'Created at', 'Level'),
+                ((b.get('backup_uuid'),
+                  b.get('backup_metadata', {}).get('hostname'),
+                  b.get('backup_metadata', {}).get('path_to_backup'),
+                  datetime.datetime.fromtimestamp(
+                      int(b.get('backup_metadata', {}).get('time_stamp'))),
+                  b.get('backup_metadata', {}).get('curr_backup_level')
+                  ) for b in backups))
 

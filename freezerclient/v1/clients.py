@@ -20,6 +20,7 @@ from cliff.show import ShowOne
 
 from freezerclient import exceptions
 from freezerclient.utils import doc_from_json_file
+from freezerclient.utils import prepare_search
 
 
 logging = logging.getLogger(__name__)
@@ -83,9 +84,11 @@ class ClientList(Lister):
         return parser
 
     def take_action(self, parsed_args):
+        search = prepare_search(parsed_args.search)
+
         clients = self.app.client.clients.list(limit=parsed_args.limit,
                                                offset=parsed_args.offset,
-                                               search=parsed_args.search)
+                                               search=search)
 
         return (('Client ID', 'uuid', 'hostname', 'description'),
                 ((client.get('client', {}).get('client_id'),

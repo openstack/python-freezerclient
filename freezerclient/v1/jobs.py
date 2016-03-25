@@ -23,6 +23,7 @@ from cliff.show import ShowOne
 
 from freezerclient import exceptions
 from freezerclient.utils import doc_from_json_file
+from freezerclient.utils import prepare_search
 
 
 logging = logging.getLogger(__name__)
@@ -89,19 +90,41 @@ class JobList(Lister):
         parser.add_argument(
             '--search',
             dest='search',
-            default='',
+            default={},
             help='Define a filter for the query',
+        )
+
+        parser.add_argument(
+            '--client', '-C',
+            dest='client_id',
+            default='',
+            help='Get jobs for a specific client',
         )
         return parser
 
     def take_action(self, parsed_args):
-        jobs = self.app.client.jobs.list_all(
-                limit=parsed_args.limit,
-                offset=parsed_args.offset,
-                search=parsed_args.search
-        )
 
-        return (('Job ID', 'Description', '# Actions', 'Result', 'Event', 'Session ID'),
+        search = prepare_search(parsed_args.search)
+
+        if parsed_args.client_id:
+            jobs = self.app.client.jobs.list(
+                    limit=parsed_args.limit,
+                    offset=parsed_args.offset,
+                    search=search,
+                    client_id=parsed_args.client_id
+            )
+        else:
+            jobs = self.app.client.jobs.list_all(
+                    limit=parsed_args.limit,
+                    offset=parsed_args.offset,
+                    search=search
+            )
+
+        if not jobs:
+            print('No jobs')
+
+        return (('Job ID', 'Description', '# Actions', 'Result', 'Event',
+                 'Session ID'),
                 ((job.get('job_id'),
                   job.get('description'),
                   len(job.get('job_actions', [])),
