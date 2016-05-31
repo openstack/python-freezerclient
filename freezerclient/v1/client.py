@@ -27,6 +27,9 @@ from keystoneclient.auth.identity import v3
 from keystoneclient import session as ksc_session
 
 
+FREEZER_SERVICE_TYPE = 'backup'
+
+
 def guess_auth_version(opts):
     """ Guess keystone version to connect to"""
     if opts.os_identity_api_version == '3':
@@ -120,7 +123,8 @@ class Client(object):
         self.verify = verify
         self.cert = cert
         self._session = session
-        self.endpoint = endpoint
+
+        self.validate()
 
         self.jobs = jobs.JobManager(self, verify=verify)
         self.clients = clients.ClientManager(self, verify=verify)
@@ -137,6 +141,18 @@ class Client(object):
                                    verify=self.verify,
                                    cert=self.cert)
 
+    @CachedProperty
+    def endpoint(self):
+        if self.opts.os_backup_url:
+            return self.opts.os_backup_url
+        else:
+            auth_ref = self.session.auth.get_auth_ref(self.session)
+            endpoint = auth_ref.service_catalog.url_for(
+                service_type=FREEZER_SERVICE_TYPE,
+                endpoint_type=self.opts.os_endpoint_type,
+            )
+        return endpoint
+
     @property
     def auth_token(self):
         return self.session.get_token()
@@ -145,3 +161,10 @@ class Client(object):
     def client_id(self):
         return '{0}_{1}'.format(self.session.get_project_id(),
                                 socket.gethostname())
+
+    def validate(self):
+        """ Validate that the client objects gets created correctly.
+        :return: bool
+        """
+        if self.opts.os_auth_url is None:
+            raise Exception('OS_AUTH_URL should be provided.')
