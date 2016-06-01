@@ -117,3 +117,15 @@ def doc_from_json_file(path_to_file):
         except Exception as err:
             logging.error(err)
             raise Exception('Unable to load conf file. {0}'.format(err))
+
+
+def create_headers_for_request(token):
+    """Create a header dict to be passed to the api.
+
+    :param token: token string coming from the api
+    :return: a dict containing all the headers for a request
+    """
+    return {
+        'X-Auth-Token': token,
+        'Content-Type': 'application/json'
+    }

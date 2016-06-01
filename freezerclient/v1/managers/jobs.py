@@ -16,6 +16,7 @@ import json
 import requests
 
 from freezerclient import exceptions
+from freezerclient.utils import create_headers_for_request
 
 
 class JobManager(object):
@@ -27,7 +28,7 @@ class JobManager(object):
 
     @property
     def headers(self):
-        return {'X-Auth-Token': self.client.auth_token}
+        return create_headers_for_request(self.client.auth_token)
 
     def create(self, doc, job_id=''):
         job_id = job_id or doc.get('job_id', '')

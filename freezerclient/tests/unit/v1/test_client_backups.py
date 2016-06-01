@@ -32,7 +32,8 @@ class TestBackupManager(unittest.TestCase):
     @patch('freezerclient.v1.managers.backups.requests')
     def test_create(self, mock_requests):
         self.assertEqual('http://testendpoint:9999/v1/backups/', self.b.endpoint)
-        self.assertEqual({'X-Auth-Token': 'testtoken'}, self.b.headers)
+        self.assertEqual({'X-Auth-Token': 'testtoken', 'Content-Type': 'application/json'},
+                         self.b.headers)
 
     @patch('freezerclient.v1.managers.backups.requests')
     def test_create_ok(self, mock_requests):
@@ -114,7 +115,7 @@ class TestBackupManager(unittest.TestCase):
             'http://testendpoint:9999/v1/backups/',
             params={'limit': 5, 'offset': 5},
             data='{"time_before": 1428529956}',
-            headers={'X-Auth-Token': 'testtoken'},
+            headers={'X-Auth-Token': 'testtoken', 'Content-Type': 'application/json'},
             verify=True)
         self.assertEqual(backup_list, retval)
 

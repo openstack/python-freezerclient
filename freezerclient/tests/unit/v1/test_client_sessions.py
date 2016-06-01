@@ -31,7 +31,7 @@ class TestSessionManager(unittest.TestCase):
         self.mock_client.client_id = 'test_client_id_78900987'
         self.session_manager = sessions.SessionManager(self.mock_client)
         self.endpoint = 'http://testendpoint:9999/v1/sessions/'
-        self.headers = {'X-Auth-Token': 'testtoken'}
+        self.headers = {'X-Auth-Token': 'testtoken', 'Content-Type': 'application/json'}
 
     @patch('freezerclient.v1.managers.sessions.requests')
     def test_create(self, mock_requests):

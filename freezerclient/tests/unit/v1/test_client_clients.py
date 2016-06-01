@@ -31,7 +31,8 @@ class TestClientManager(unittest.TestCase):
     @patch('freezerclient.v1.managers.clients.requests')
     def test_create(self, mock_requests):
         self.assertEqual('http://testendpoint:9999/v1/clients/', self.r.endpoint)
-        self.assertEqual({'X-Auth-Token': 'testtoken'}, self.r.headers)
+        self.assertEqual({'X-Auth-Token': 'testtoken', 'Content-Type': 'application/json'},
+                         self.r.headers)
 
     @patch('freezerclient.v1.managers.clients.requests')
     def test_create_ok(self, mock_requests):
