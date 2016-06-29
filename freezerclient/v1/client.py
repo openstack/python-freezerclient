@@ -109,17 +109,22 @@ class Client(object):
         :param cert: Path to cert
         :return: freezerclient.Client
         """
-        self.opts = opts or Namespace({})
-        self.opts.os_token = token or None
-        self.opts.os_username = username or None
-        self.opts.os_password = password or None
-        self.opts.os_tenant_name = tenant_name or None
-        self.opts.os_auth_url = auth_url or None
-        self.opts.os_backup_url = endpoint or None
-        self.opts.os_project_name = project_name or None
-        self.opts.os_user_domain_name = user_domain_name or None
-        self.opts.os_project_domain_name = project_domain_name or None
-        self.opts.auth_version = version
+
+        if opts is None:
+            self.opts = Namespace({})
+            self.opts.os_token = token or None
+            self.opts.os_username = username or None
+            self.opts.os_password = password or None
+            self.opts.os_tenant_name = tenant_name or None
+            self.opts.os_auth_url = auth_url or None
+            self.opts.os_backup_url = endpoint or None
+            self.opts.os_project_name = project_name or None
+            self.opts.os_user_domain_name = user_domain_name or None
+            self.opts.os_project_domain_name = project_domain_name or None
+            self.opts.auth_version = version
+        else:
+            self.opts = opts
+
         self.verify = verify
         self.cert = cert
         self._session = session
