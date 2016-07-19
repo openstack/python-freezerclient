@@ -127,5 +127,6 @@ def create_headers_for_request(token):
     """
     return {
         'X-Auth-Token': token,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
     }

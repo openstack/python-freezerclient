@@ -28,14 +28,20 @@ class TestJobManager(unittest.TestCase):
         self.mock_response = Mock()
         self.mock_client.endpoint = 'http://testendpoint:9999'
         self.mock_client.auth_token = 'testtoken'
-        self.headers = {'X-Auth-Token': 'testtoken', 'Content-Type': 'application/json'}
         self.mock_client.client_id = 'test_client_id_78900987'
         self.job_manager = jobs.JobManager(self.mock_client)
+        self.headers = {
+            'X-Auth-Token': 'testtoken',
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+            }
 
     @patch('freezerclient.v1.managers.jobs.requests')
     def test_create(self, mock_requests):
         self.assertEqual('http://testendpoint:9999/v1/jobs/', self.job_manager.endpoint)
-        self.assertEqual({'X-Auth-Token': 'testtoken', 'Content-Type': 'application/json'},
+        self.assertEqual({'X-Auth-Token': 'testtoken',
+                          'Content-Type': 'application/json',
+                          'Accept': 'application/json'},
                          self.job_manager.headers)
 
     @patch('freezerclient.v1.managers.jobs.requests')
