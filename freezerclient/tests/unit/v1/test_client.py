@@ -31,22 +31,22 @@ class TestSupportFunctions(unittest.TestCase):
     def test_guess_auth_version_explicit_3(self):
         mock_opts = Mock()
         mock_opts.os_identity_api_version = '3'
-        self.assertEquals(client.guess_auth_version(mock_opts), '3')
+        self.assertEqual(client.guess_auth_version(mock_opts), '3')
 
     def test_guess_auth_version_explicit_2(self):
         mock_opts = Mock()
         mock_opts.os_identity_api_version = '2.0'
-        self.assertEquals(client.guess_auth_version(mock_opts), '2.0')
+        self.assertEqual(client.guess_auth_version(mock_opts), '2.0')
 
     def test_guess_auth_version_implicit_3(self):
         mock_opts = Mock()
         mock_opts.os_auth_url = 'http://whatever/v3'
-        self.assertEquals(client.guess_auth_version(mock_opts), '3')
+        self.assertEqual(client.guess_auth_version(mock_opts), '3')
 
     def test_guess_auth_version_implicit_2(self):
         mock_opts = Mock()
         mock_opts.os_auth_url = 'http://whatever/v2.0'
-        self.assertEquals(client.guess_auth_version(mock_opts), '2.0')
+        self.assertEqual(client.guess_auth_version(mock_opts), '2.0')
 
     @patch('freezerclient.v1.client.v3')
     @patch('freezerclient.v1.client.v2')
@@ -136,7 +136,7 @@ class TestClientMock(unittest.TestCase):
         c = client.Client(session=mock_session, endpoint='justtest',
                           auth_url='blabla')
         self.assertIsInstance(c, client.Client)
-        self.assertEquals(c.auth_token, 'antaniX2')
+        self.assertEqual(c.auth_token, 'antaniX2')
 
     @patch('freezerclient.v1.client.socket')
     @patch('freezerclient.v1.client.ksc_session')
@@ -148,4 +148,4 @@ class TestClientMock(unittest.TestCase):
         c = client.Client(session=mock_session, endpoint='justtest',
                           auth_url='blabla')
         self.assertIsInstance(c, client.Client)
-        self.assertEquals(c.client_id, 'H2O_parmenide')
+        self.assertEqual(c.client_id, 'H2O_parmenide')
