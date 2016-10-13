@@ -1,6 +1,14 @@
-===================================================
-Python bindings and CLI for OpenStack's Freezer API
-===================================================
+=============================================================
+Python bindings to the OpenStack Backup/Restore API (Freezer)
+=============================================================
+
+.. image:: https://img.shields.io/pypi/v/python-freezerclient.svg
+    :target: https://pypi.python.org/pypi/python-freezerclient/
+    :alt: Latest Version
+
+.. image:: https://img.shields.io/pypi/dm/python-freezerclient.svg
+    :target: https://pypi.python.org/pypi/python-freezerclient/
+    :alt: Downloads
 
 This is a client library for Freezer built on the OpenStack Disaster Recovery API. It provides a Python API (the freezerclient module) and a command-line tool (freezer). This library fully supports the v1 Disaster Recovery API.
 
