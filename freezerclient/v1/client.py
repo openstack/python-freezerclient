@@ -84,7 +84,8 @@ class Client(object):
     def __init__(self, version='3', token=None, username=None, password=None,
                  tenant_name=None, auth_url=None, session=None, endpoint=None,
                  opts=None, project_name=None, user_domain_name=None,
-                 project_domain_name=None, verify=True, cert=None):
+                 project_domain_name=None, verify=True, cert=None,
+                 insecure=False):
         """
         Initialize a new client for the Disaster Recovery v1 API.
         :param version: keystone version to use
@@ -125,9 +126,11 @@ class Client(object):
         else:
             self.opts = opts
 
-        self.verify = verify
         self.cert = cert
         self._session = session
+        if insecure:
+            verify = False
+        self.verify = verify
 
         self.validate()
 

@@ -221,7 +221,8 @@ class FreezerShell(App):
             'user_domain_name': self.options.os_user_domain_name,
             'project_domain_name': self.options.os_project_domain_name,
             'verify': True or self.options.os_cacert,
-            'cert': self.options.os_cert
+            'cert': self.options.os_cert,
+            'insecure': self.options.insecure
         }
         return Client(**opts)
 
