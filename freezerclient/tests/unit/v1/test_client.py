@@ -103,7 +103,7 @@ class TestClientMock(unittest.TestCase):
     @patch('freezerclient.v1.client.ksc_session')
     @patch('freezerclient.v1.client.get_auth_plugin')
     def test_client_new(self, mock_get_auth_plugin, mock_ksc_session):
-        c = client.Client(opts=Mock(), endpoint='blabla', auth_url='blabla')
+        c = client.Client(endpoint='blabla', auth_url='blabla')
         self.assertIsInstance(c, client.Client)
 
     @patch('freezerclient.v1.client.ksc_session')
@@ -116,8 +116,7 @@ class TestClientMock(unittest.TestCase):
                   'auth_url': 'echo',
                   'session': 'foxtrot',
                   'endpoint': 'golf',
-                  'version': 'hotel',
-                  'opts': Mock()}
+                  'version': 'hotel'}
         c = client.Client(**kwargs)
         self.assertIsInstance(c, client.Client)
         self.assertEqual('alpha', c.opts.os_token)
@@ -135,7 +134,7 @@ class TestClientMock(unittest.TestCase):
         mock_session = Mock()
         mock_session.get_token.return_value = 'antaniX2'
         c = client.Client(session=mock_session, endpoint='justtest',
-                          auth_url='blabla', opts=Mock())
+                          auth_url='blabla')
         self.assertIsInstance(c, client.Client)
         self.assertEquals(c.auth_token, 'antaniX2')
 
@@ -147,6 +146,6 @@ class TestClientMock(unittest.TestCase):
         mock_session = Mock()
         mock_session.get_project_id.return_value = 'H2O'
         c = client.Client(session=mock_session, endpoint='justtest',
-                          auth_url='blabla', opts=Mock())
+                          auth_url='blabla')
         self.assertIsInstance(c, client.Client)
         self.assertEquals(c.client_id, 'H2O_parmenide')
