@@ -32,7 +32,7 @@ log = logging.getLogger(__name__)
 
 
 class FreezerCommandManager(CommandManager):
-    """ All commands available for the shell are registered here """
+    """All commands available for the shell are registered here"""
     SHELL_COMMANDS = {
         'job-show': jobs.JobShow,
         'job-list': jobs.JobList,
@@ -206,7 +206,7 @@ class FreezerShell(App):
 
     @property
     def client(self):
-        """ Build a client object to communicate with the API
+        """Build a client object to communicate with the API
         :return: freezerclient object
         """
         opts = {

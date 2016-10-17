@@ -31,7 +31,7 @@ FREEZER_SERVICE_TYPE = 'backup'
 
 
 def guess_auth_version(opts):
-    """ Guess keystone version to connect to"""
+    """Guess keystone version to connect to"""
     if opts.os_identity_api_version == '3':
         return '3'
     elif opts.os_identity_api_version == '2.0':
@@ -171,7 +171,7 @@ class Client(object):
                                 socket.gethostname())
 
     def validate(self):
-        """ Validate that the client objects gets created correctly.
+        """Validate that the client objects gets created correctly.
         :return: bool
         """
         if self.opts.os_auth_url is None:
