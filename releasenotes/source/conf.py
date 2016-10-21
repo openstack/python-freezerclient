@@ -230,7 +230,7 @@ latex_documents = [
 man_pages = [
     ('index', 'pythonfreezerclient',
      u'Freezer Client Release Notes Documentation',
-     [u'Nova developers'], 1)
+     [u'Freezer developers'], 1)
 ]
 
 # If true, show URL addresses after external links.
