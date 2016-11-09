@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import logging
-
 import os
 import sys
 
@@ -22,13 +21,15 @@ from cliff.commandmanager import CommandManager
 
 from freezerclient.v1 import actions
 from freezerclient.v1 import backups
-from freezerclient.v1.client import Client
+from freezerclient.v1 import client
 from freezerclient.v1 import clients
 from freezerclient.v1 import jobs
 from freezerclient.v1 import sessions
 
 
 log = logging.getLogger(__name__)
+# Suppress output from requests
+logging.getLogger('requests').setLevel(logging.WARN)
 
 
 class FreezerCommandManager(CommandManager):
@@ -98,7 +99,7 @@ class FreezerShell(App):
         parser.add_argument(
             '--os-endpoint-type',
             dest='os_endpoint_type',
-            default=os.environ.get('OS_ENDPOINT_TYPE'),
+            default=os.environ.get('OS_ENDPOINT_TYPE') or 'public',
             help='''Endpoint type to select. Valid endpoint types:
                     "public" or "publicURL", "internal" or "internalURL",
                     "admin" or "adminURL"'''
@@ -217,6 +218,7 @@ class FreezerShell(App):
             'tenant_name': self.options.os_tenant_name,
             'auth_url': self.options.os_auth_url,
             'endpoint': self.options.os_backup_url,
+            'endpoint_type': self.options.os_endpoint_type,
             'project_name': self.options.os_project_name,
             'user_domain_name': self.options.os_user_domain_name,
             'project_domain_name': self.options.os_project_domain_name,
@@ -224,7 +226,7 @@ class FreezerShell(App):
             'cert': self.options.os_cert,
             'insecure': self.options.insecure
         }
-        return Client(**opts)
+        return client.Client(**opts)
 
 
 def main(argv=sys.argv[1:]):

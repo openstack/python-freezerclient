@@ -14,18 +14,16 @@
 
 import socket
 
-from freezerclient.utils import CachedProperty
-from freezerclient.utils import Namespace
+from keystoneauth1.identity import v2
+from keystoneauth1.identity import v3
+from keystoneauth1 import session as ksa_session
+
+from freezerclient import utils
 from freezerclient.v1.managers import actions
 from freezerclient.v1.managers import backups
 from freezerclient.v1.managers import clients
 from freezerclient.v1.managers import jobs
 from freezerclient.v1.managers import sessions
-
-from keystoneclient.auth.identity import v2
-from keystoneclient.auth.identity import v3
-from keystoneclient import session as ksc_session
-
 
 FREEZER_SERVICE_TYPE = 'backup'
 
@@ -83,9 +81,9 @@ class Client(object):
 
     def __init__(self, version='3', token=None, username=None, password=None,
                  tenant_name=None, auth_url=None, session=None, endpoint=None,
-                 opts=None, project_name=None, user_domain_name=None,
-                 project_domain_name=None, verify=True, cert=None,
-                 insecure=False):
+                 endpoint_type=None, opts=None, project_name=None,
+                 user_domain_name=None, project_domain_name=None, verify=True,
+                 cert=None, insecure=False):
         """
         Initialize a new client for the Disaster Recovery v1 API.
         :param version: keystone version to use
@@ -96,6 +94,7 @@ class Client(object):
         :param auth_url: keystone-api endpoint
         :param session: keystone.Session
         :param endpoint: freezer-api endpoint
+        :param endpoint_type: type of endpoint
         :param opts: a namespace to store all keystone data
         :param project_name: only for version 3
         :param user_domain_name: only for version 3
@@ -112,13 +111,14 @@ class Client(object):
         """
 
         if opts is None:
-            self.opts = Namespace({})
+            self.opts = utils.Namespace({})
             self.opts.os_token = token or None
             self.opts.os_username = username or None
             self.opts.os_password = password or None
             self.opts.os_tenant_name = tenant_name or None
             self.opts.os_auth_url = auth_url or None
             self.opts.os_backup_url = endpoint or None
+            self.opts.os_endpoint_type = endpoint_type or None
             self.opts.os_project_name = project_name or None
             self.opts.os_user_domain_name = user_domain_name or None
             self.opts.os_project_domain_name = project_domain_name or None
@@ -140,16 +140,16 @@ class Client(object):
         self.sessions = sessions.SessionManager(self, verify=verify)
         self.actions = actions.ActionManager(self, verify=verify)
 
-    @CachedProperty
+    @utils.CachedProperty
     def session(self):
         if self._session:
             return self._session
         auth_plugin = get_auth_plugin(self.opts)
-        return ksc_session.Session(auth=auth_plugin,
+        return ksa_session.Session(auth=auth_plugin,
                                    verify=self.verify,
                                    cert=self.cert)
 
-    @CachedProperty
+    @utils.CachedProperty
     def endpoint(self):
         if self.opts.os_backup_url:
             return self.opts.os_backup_url
@@ -157,7 +157,7 @@ class Client(object):
             auth_ref = self.session.auth.get_auth_ref(self.session)
             endpoint = auth_ref.service_catalog.url_for(
                 service_type=FREEZER_SERVICE_TYPE,
-                endpoint_type=self.opts.os_endpoint_type,
+                interface=self.opts.os_endpoint_type,
             )
         return endpoint
 
@@ -165,7 +165,7 @@ class Client(object):
     def auth_token(self):
         return self.session.get_token()
 
-    @CachedProperty
+    @utils.CachedProperty
     def client_id(self):
         return '{0}_{1}'.format(self.session.get_project_id(),
                                 socket.gethostname())
