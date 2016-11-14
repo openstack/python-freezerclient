@@ -117,6 +117,7 @@ class ClientRegister(Command):
         parser = super(ClientRegister, self).get_parser(prog_name)
         parser.add_argument('--file',
                             dest='file',
+                            required=True,
                             help='Path to json file with the client')
         return parser
 
