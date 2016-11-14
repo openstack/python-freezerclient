@@ -14,19 +14,18 @@
 
 import logging
 
-from cliff.command import Command
-from cliff.lister import Lister
-from cliff.show import ShowOne
+from cliff import command
+from cliff import lister
+from cliff import show
 
 from freezerclient import exceptions
-from freezerclient.utils import doc_from_json_file
-from freezerclient.utils import prepare_search
+from freezerclient import utils
 
 
 logging = logging.getLogger(__name__)
 
 
-class ClientShow(ShowOne):
+class ClientShow(show.ShowOne):
     """Show a single client"""
     def get_parser(self, prog_name):
         parser = super(ClientShow, self).get_parser(prog_name)
@@ -56,7 +55,7 @@ class ClientShow(ShowOne):
         return column, data
 
 
-class ClientList(Lister):
+class ClientList(lister.Lister):
     """List of clients registered in the api"""
     def get_parser(self, prog_name):
         parser = super(ClientList, self).get_parser(prog_name)
@@ -84,21 +83,28 @@ class ClientList(Lister):
         return parser
 
     def take_action(self, parsed_args):
-        search = prepare_search(parsed_args.search)
+        search = utils.prepare_search(parsed_args.search)
 
         clients = self.app.client.clients.list(limit=parsed_args.limit,
                                                offset=parsed_args.offset,
                                                search=search)
 
-        return (('Client ID', 'uuid', 'hostname', 'description'),
-                ((client.get('client', {}).get('client_id'),
-                  client.get('uuid'),
-                  client.get('client', {}).get('hostname'),
-                  client.get('client', {}).get('description', '')
-                  ) for client in clients))
+        # Print empty table if no clients found
+        if not clients:
+            clients = [{}]
+
+        columns = ('Client ID', 'uuid', 'hostname', 'description')
+        data = ((
+                    client.get('client', {}).get('client_id', ''),
+                    client.get('uuid', ''),
+                    client.get('client', {}).get('hostname', ''),
+                    client.get('client', {}).get('description', '')
+                ) for client in clients)
+
+        return columns, data
 
 
-class ClientDelete(Command):
+class ClientDelete(command.Command):
     """Delete a client from the api"""
     def get_parser(self, prog_name):
         parser = super(ClientDelete, self).get_parser(prog_name)
@@ -107,11 +113,17 @@ class ClientDelete(Command):
         return parser
 
     def take_action(self, parsed_args):
+        # Need to check that client exists
+        client = self.app.client.clients.get(parsed_args.client_id)
+        if not client:
+            logging.info("Unable to delete specified client.")
+            raise exceptions.ApiClientException('Client not found')
+
         self.app.client.clients.delete(parsed_args.client_id)
         logging.info('Client {0} deleted'.format(parsed_args.client_id))
 
 
-class ClientRegister(Command):
+class ClientRegister(command.Command):
     """Register a new client"""
     def get_parser(self, prog_name):
         parser = super(ClientRegister, self).get_parser(prog_name)
@@ -122,7 +134,7 @@ class ClientRegister(Command):
         return parser
 
     def take_action(self, parsed_args):
-        client = doc_from_json_file(parsed_args.file)
+        client = utils.doc_from_json_file(parsed_args.file)
         try:
             client_id = self.app.client.clients.create(client)
         except Exception as err:
