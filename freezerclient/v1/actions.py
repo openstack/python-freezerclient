@@ -14,19 +14,18 @@
 
 import logging
 
-from cliff.command import Command
-from cliff.lister import Lister
-from cliff.show import ShowOne
+from cliff import command
+from cliff import lister
+from cliff import show
 
 from freezerclient import exceptions
-from freezerclient.utils import doc_from_json_file
-from freezerclient.utils import prepare_search
+from freezerclient import utils
 
 
 logging = logging.getLogger(__name__)
 
 
-class ActionShow(ShowOne):
+class ActionShow(show.ShowOne):
     """Show a single action """
     def get_parser(self, prog_name):
         parser = super(ActionShow, self).get_parser(prog_name)
@@ -63,7 +62,7 @@ class ActionShow(ShowOne):
         return column, data
 
 
-class ActionList(Lister):
+class ActionList(lister.Lister):
     """List all actions for your user"""
     def get_parser(self, prog_name):
         parser = super(ActionList, self).get_parser(prog_name)
@@ -91,7 +90,7 @@ class ActionList(Lister):
         return parser
 
     def take_action(self, parsed_args):
-        search = prepare_search(parsed_args.search)
+        search = utils.prepare_search(parsed_args.search)
 
         actions = self.app.client.actions.list(
             limit=parsed_args.limit,
@@ -111,7 +110,7 @@ class ActionList(Lister):
                   ) for action in actions))
 
 
-class ActionDelete(Command):
+class ActionDelete(command.Command):
     """Delete an action from the api"""
     def get_parser(self, prog_name):
         parser = super(ActionDelete, self).get_parser(prog_name)
@@ -124,7 +123,7 @@ class ActionDelete(Command):
         logging.info('Action {0} deleted'.format(parsed_args.action_id))
 
 
-class ActionCreate(Command):
+class ActionCreate(command.Command):
     """Create an action from a file"""
     def get_parser(self, prog_name):
         parser = super(ActionCreate, self).get_parser(prog_name)
@@ -134,12 +133,12 @@ class ActionCreate(Command):
         return parser
 
     def take_action(self, parsed_args):
-        action = doc_from_json_file(parsed_args.file)
+        action = utils.doc_from_json_file(parsed_args.file)
         action_id = self.app.client.actions.create(action)
         logging.info('Action {0} created'.format(action_id))
 
 
-class ActionUpdate(Command):
+class ActionUpdate(command.Command):
     """Update an action from a file"""
     def get_parser(self, prog_name):
         parser = super(ActionUpdate, self).get_parser(prog_name)
@@ -151,6 +150,6 @@ class ActionUpdate(Command):
         return parser
 
     def take_action(self, parsed_args):
-        action = doc_from_json_file(parsed_args.file)
+        action = utils.doc_from_json_file(parsed_args.file)
         self.app.client.actions.update(parsed_args.action_id, action)
         logging.info('Action {0} updated'.format(parsed_args.action_id))

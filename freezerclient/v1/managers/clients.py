@@ -16,7 +16,7 @@ import json
 import requests
 
 from freezerclient import exceptions
-from freezerclient.utils import create_headers_for_request
+from freezerclient import utils
 
 
 class ClientManager(object):
@@ -28,7 +28,7 @@ class ClientManager(object):
 
     @property
     def headers(self):
-        return create_headers_for_request(self.client.auth_token)
+        return utils.create_headers_for_request(self.client.auth_token)
 
     def create(self, client_info):
         r = requests.post(self.endpoint,

@@ -14,20 +14,19 @@
 
 import datetime
 import logging
+import pprint
 
-from pprint import pformat
-
-from cliff.lister import Lister
-from cliff.show import ShowOne
+from cliff import lister
+from cliff import show
 
 from freezerclient import exceptions
-from freezerclient.utils import prepare_search
+from freezerclient import utils
 
 
 logging = logging.getLogger(__name__)
 
 
-class BackupShow(ShowOne):
+class BackupShow(show.ShowOne):
     """Show the metadata of a single backup"""
     def get_parser(self, prog_name):
         parser = super(BackupShow, self).get_parser(prog_name)
@@ -58,12 +57,12 @@ class BackupShow(ShowOne):
         data = (
             backup.get('backup_id'),
             backup.get('backup_uuid'),
-            pformat(backup.get('backup_metadata'))
+            pprint.pformat(backup.get('backup_metadata'))
         )
         return column, data
 
 
-class BackupList(Lister):
+class BackupList(lister.Lister):
     """List all backups for your user"""
     def get_parser(self, prog_name):
         parser = super(BackupList, self).get_parser(prog_name)
@@ -91,7 +90,7 @@ class BackupList(Lister):
         return parser
 
     def take_action(self, parsed_args):
-        search = prepare_search(parsed_args.search)
+        search = utils.prepare_search(parsed_args.search)
 
         backups = self.app.client.backups.list(limit=parsed_args.limit,
                                                offset=parsed_args.offset,

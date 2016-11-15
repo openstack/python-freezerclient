@@ -13,19 +13,18 @@
 # limitations under the License.
 
 import json
+import mock
 import unittest
 
 from freezerclient import exceptions
 from freezerclient.v1.client import sessions
 
-from mock import Mock, patch
-
 
 class TestSessionManager(unittest.TestCase):
 
     def setUp(self):
-        self.mock_client = Mock()
-        self.mock_response = Mock()
+        self.mock_client = mock.Mock()
+        self.mock_response = mock.Mock()
         self.mock_client.endpoint = 'http://testendpoint:9999'
         self.mock_client.auth_token = 'testtoken'
         self.mock_client.client_id = 'test_client_id_78900987'
@@ -37,12 +36,12 @@ class TestSessionManager(unittest.TestCase):
             'Accept': 'application/json'
             }
 
-    @patch('freezerclient.v1.managers.sessions.requests')
+    @mock.patch('freezerclient.v1.managers.sessions.requests')
     def test_create(self, mock_requests):
         self.assertEqual(self.endpoint, self.session_manager.endpoint)
         self.assertEqual(self.headers, self.session_manager.headers)
 
-    @patch('freezerclient.v1.managers.sessions.requests')
+    @mock.patch('freezerclient.v1.managers.sessions.requests')
     def test_create_ok(self, mock_requests):
         self.mock_response.status_code = 201
         self.mock_response.json.return_value = {'session_id': 'qwerqwer'}
@@ -50,26 +49,26 @@ class TestSessionManager(unittest.TestCase):
         retval = self.session_manager.create({'session': 'metadata'})
         self.assertEqual('qwerqwer', retval)
 
-    @patch('freezerclient.v1.managers.sessions.requests')
+    @mock.patch('freezerclient.v1.managers.sessions.requests')
     def test_create_raise_ApiClientException_when_api_return_error_code(self, mock_requests):
         self.mock_response.status_code = 500
         mock_requests.post.return_value = self.mock_response
         self.assertRaises(exceptions.ApiClientException, self.session_manager.create, {'session': 'metadata'})
 
-    @patch('freezerclient.v1.managers.sessions.requests')
+    @mock.patch('freezerclient.v1.managers.sessions.requests')
     def test_delete_ok(self, mock_requests):
         self.mock_response.status_code = 204
         mock_requests.delete.return_value = self.mock_response
         retval = self.session_manager.delete('test_session_id')
         self.assertIsNone(retval)
 
-    @patch('freezerclient.v1.managers.sessions.requests')
+    @mock.patch('freezerclient.v1.managers.sessions.requests')
     def test_delete_raise_ApiClientException_when_api_return_error_code(self, mock_requests):
         self.mock_response.status_code = 500
         mock_requests.delete.return_value = self.mock_response
         self.assertRaises(exceptions.ApiClientException, self.session_manager.delete, 'test_session_id')
 
-    @patch('freezerclient.v1.managers.sessions.requests')
+    @mock.patch('freezerclient.v1.managers.sessions.requests')
     def test_get_ok(self, mock_requests):
         self.mock_response.status_code = 200
         self.mock_response.json.return_value = {'session_id': 'qwerqwer'}
@@ -77,20 +76,20 @@ class TestSessionManager(unittest.TestCase):
         retval = self.session_manager.get('test_session_id')
         self.assertEqual({'session_id': 'qwerqwer'}, retval)
 
-    @patch('freezerclient.v1.managers.sessions.requests')
+    @mock.patch('freezerclient.v1.managers.sessions.requests')
     def test_get_raise_ApiClientException_when_api_return_error_different_from_404(self, mock_requests):
         self.mock_response.status_code = 500
         mock_requests.get.return_value = self.mock_response
         self.assertRaises(exceptions.ApiClientException, self.session_manager.get, 'test_session_id')
 
-    @patch('freezerclient.v1.managers.sessions.requests')
+    @mock.patch('freezerclient.v1.managers.sessions.requests')
     def test_get_none(self, mock_requests):
         self.mock_response.status_code = 404
         mock_requests.get.return_value = self.mock_response
         retval = self.session_manager.get('test_session_id')
         self.assertIsNone(retval)
 
-    @patch('freezerclient.v1.managers.sessions.requests')
+    @mock.patch('freezerclient.v1.managers.sessions.requests')
     def test_list_ok(self, mock_requests):
         self.mock_response.status_code = 200
         session_list = [{'session_id_0': 'bomboloid'}, {'session_id_1': 'asdfasdf'}]
@@ -99,7 +98,7 @@ class TestSessionManager(unittest.TestCase):
         retval = self.session_manager.list()
         self.assertEqual(session_list, retval)
 
-    @patch('freezerclient.v1.managers.sessions.requests')
+    @mock.patch('freezerclient.v1.managers.sessions.requests')
     def test_list_raise_ApiClientException_when_api_return_error_code(self, mock_requests):
         self.mock_response.status_code = 404
         session_list = [{'session_id_0': 'bomboloid'}, {'session_id_1': 'asdfasdf'}]
@@ -107,7 +106,7 @@ class TestSessionManager(unittest.TestCase):
         mock_requests.get.return_value = self.mock_response
         self.assertRaises(exceptions.ApiClientException, self.session_manager.list)
 
-    @patch('freezerclient.v1.managers.sessions.requests')
+    @mock.patch('freezerclient.v1.managers.sessions.requests')
     def test_update_ok(self, mock_requests):
         self.mock_response.status_code = 200
         self.mock_response.json.return_value = {
@@ -119,7 +118,7 @@ class TestSessionManager(unittest.TestCase):
         retval = self.session_manager.update('d454beec-1f3c-4d11-aa1a-404116a40502', {'status': 'bamboozled'})
         self.assertEqual(12, retval)
 
-    @patch('freezerclient.v1.managers.sessions.requests')
+    @mock.patch('freezerclient.v1.managers.sessions.requests')
     def test_update_raise_ApiClientException_when_api_return_error_code(self, mock_requests):
         self.mock_response.json.return_value = {
             "patch": {"status": "bamboozled"},
@@ -132,7 +131,7 @@ class TestSessionManager(unittest.TestCase):
         self.assertRaises(exceptions.ApiClientException, self.session_manager.update,
                           'd454beec-1f3c-4d11-aa1a-404116a40502', {'status': 'bamboozled'})
 
-    @patch('freezerclient.v1.managers.sessions.requests')
+    @mock.patch('freezerclient.v1.managers.sessions.requests')
     def test_add_job_uses_proper_endpoint(self, mock_requests):
         session_id, job_id = 'sessionqwerty1234', 'jobqwerty1234'
         self.mock_response.status_code = 204
@@ -144,14 +143,14 @@ class TestSessionManager(unittest.TestCase):
         self.assertIsNone(retval)
         mock_requests.put.assert_called_with(endpoint, headers=self.headers, verify=True)
 
-    @patch('freezerclient.v1.managers.sessions.requests')
+    @mock.patch('freezerclient.v1.managers.sessions.requests')
     def test_add_job_raise_ApiClientException_when_api_return_error_code(self, mock_requests):
         session_id, job_id = 'sessionqwerty1234', 'jobqwerty1234'
         self.mock_response.status_code = 500
         mock_requests.put.return_value = self.mock_response
         self.assertRaises(exceptions.ApiClientException, self.session_manager.add_job, session_id, job_id)
 
-    @patch('freezerclient.v1.managers.sessions.requests')
+    @mock.patch('freezerclient.v1.managers.sessions.requests')
     def test_remove_job_uses_proper_endpoint(self, mock_requests):
         session_id, job_id = 'sessionqwerty1234', 'jobqwerty1234'
         self.mock_response.status_code = 204
@@ -163,14 +162,14 @@ class TestSessionManager(unittest.TestCase):
         self.assertIsNone(retval)
         mock_requests.delete.assert_called_with(endpoint, headers=self.headers, verify=True)
 
-    @patch('freezerclient.v1.managers.sessions.requests')
+    @mock.patch('freezerclient.v1.managers.sessions.requests')
     def test_remove_job_raise_ApiClientException_when_api_return_error_code(self, mock_requests):
         session_id, job_id = 'sessionqwerty1234', 'jobqwerty1234'
         self.mock_response.status_code = 500
         mock_requests.delete.return_value = self.mock_response
         self.assertRaises(exceptions.ApiClientException, self.session_manager.remove_job, session_id, job_id)
 
-    @patch('freezerclient.v1.managers.sessions.requests')
+    @mock.patch('freezerclient.v1.managers.sessions.requests')
     def test_start_session_posts_proper_data(self, mock_requests):
         session_id, job_id, tag = 'sessionqwerty1234', 'jobqwerty1234', 23
         self.mock_response.status_code = 202
@@ -188,7 +187,7 @@ class TestSessionManager(unittest.TestCase):
         self.assertEqual(data, json.loads(kwargs['data']))
         self.assertEqual(self.headers, kwargs['headers'])
 
-    @patch('freezerclient.v1.managers.sessions.requests')
+    @mock.patch('freezerclient.v1.managers.sessions.requests')
     def test_start_session_raise_ApiClientException_when_api_return_error_code(self, mock_requests):
         session_id, job_id, tag = 'sessionqwerty1234', 'jobqwerty1234', 23
         self.mock_response.status_code = 500
@@ -197,7 +196,7 @@ class TestSessionManager(unittest.TestCase):
         self.assertRaises(exceptions.ApiClientException, self.session_manager.start_session,
                           session_id, job_id, tag)
 
-    @patch('freezerclient.v1.managers.sessions.requests')
+    @mock.patch('freezerclient.v1.managers.sessions.requests')
     def test_end_session_posts_proper_data(self, mock_requests):
         session_id, job_id, tag = 'sessionqwerty1234', 'jobqwerty1234', 23
         self.mock_response.status_code = 202
@@ -215,7 +214,7 @@ class TestSessionManager(unittest.TestCase):
         self.assertEqual(data, json.loads(kwargs['data']))
         self.assertEqual(self.headers, kwargs['headers'])
 
-    @patch('freezerclient.v1.managers.sessions.requests')
+    @mock.patch('freezerclient.v1.managers.sessions.requests')
     def test_end_session_raise_ApiClientException_when_api_return_error_code(self, mock_requests):
         session_id, job_id, tag = 'sessionqwerty1234', 'jobqwerty1234', 23
         self.mock_response.status_code = 500
