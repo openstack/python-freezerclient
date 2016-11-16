@@ -131,9 +131,11 @@ class SessionAddJob(command.Command):
         parser = super(SessionAddJob, self).get_parser(prog_name)
         parser.add_argument('--session-id',
                             dest='session_id',
+                            required=True,
                             help='ID of the session')
         parser.add_argument('--job-id',
                             dest='job_id',
+                            required=True,
                             help='ID of the job to add')
         return parser
 
@@ -150,9 +152,11 @@ class SessionRemoveJob(command.Command):
         parser = super(SessionRemoveJob, self).get_parser(prog_name)
         parser.add_argument('--session-id',
                             dest='session_id',
+                            required=True,
                             help='ID of the session')
         parser.add_argument('--job-id',
                             dest='job_id',
+                            required=True,
                             help='ID of the job to add')
         return parser
 
