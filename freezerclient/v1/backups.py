@@ -95,12 +95,26 @@ class BackupList(lister.Lister):
         backups = self.app.client.backups.list(limit=parsed_args.limit,
                                                offset=parsed_args.offset,
                                                search=search)
-        return (('Backup UUID', 'Hostname', 'Path', 'Created at', 'Level'),
-                ((b.get('backup_uuid'),
-                  b.get('backup_metadata', {}).get('hostname'),
-                  b.get('backup_metadata', {}).get('path_to_backup'),
-                  datetime.datetime.fromtimestamp(
-                      int(b.get('backup_metadata', {}).get('time_stamp'))),
-                  b.get('backup_metadata', {}).get('curr_backup_level')
-                  ) for b in backups))
+
+        columns = ('Backup UUID', 'Hostname', 'Path', 'Created at', 'Level')
+
+        # Print empty table if no backups found
+        if not backups:
+            backups = [{}]
+            data = ((b.get('backup_uuid', ''),
+                     b.get('backup_metadata', {}).get('hostname', ''),
+                     b.get('backup_metadata', {}).get('path_to_backup', ''),
+                     b.get('backup_metadata', {}).get('time_stamp', ''),
+                     b.get('backup_metadata', {}).get('curr_backup_level', '')
+                     ) for b in backups)
+        else:
+            data = ((b.get('backup_uuid'),
+                     b.get('backup_metadata', {}).get('hostname'),
+                     b.get('backup_metadata', {}).get('path_to_backup'),
+                     datetime.datetime.fromtimestamp(
+                         int(b.get('backup_metadata', {}).get('time_stamp'))),
+                     b.get('backup_metadata', {}).get('curr_backup_level')
+                     ) for b in backups)
+
+        return columns, data
 

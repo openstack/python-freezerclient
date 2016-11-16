@@ -90,12 +90,24 @@ class SessionList(lister.Lister):
             search=parsed_args.search
         )
 
-        return (('Session ID', 'Description', 'Status', '# Jobs'),
-                ((session.get('session_id'),
-                  session.get('description'),
-                  session.get('status'),
-                  len(session.get('jobs', [])),
-                  ) for session in sessions))
+        columns = ('Session ID', 'Description', 'Status', '# Jobs')
+
+        # Print empty table if no sessions found
+        if not sessions:
+            sessions = [{}]
+            data = ((session.get('session_id', ''),
+                     session.get('description', ''),
+                     session.get('status', ''),
+                     session.get('jobs', ''),
+                     ) for session in sessions)
+        else:
+            data = ((session.get('session_id'),
+                     session.get('description'),
+                     session.get('status'),
+                     len(session.get('jobs', [])),
+                     ) for session in sessions)
+
+        return columns, data
 
 
 class SessionCreate(command.Command):

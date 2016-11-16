@@ -98,16 +98,31 @@ class ActionList(lister.Lister):
             search=search
         )
 
-        return (('Action ID', 'Name', 'Action',
-                 'Path to Backup or Restore', 'Mode', 'Storage', 'snapshot'),
-                ((action.get('action_id'),
-                  action.get('freezer_action', {}).get('backup_name', ''),
-                  action.get('freezer_action', {}).get('action', 'backup'),
-                  action.get('freezer_action', {}).get('path_to_backup', ''),
-                  action.get('freezer_action', {}).get('mode', 'fs'),
-                  action.get('freezer_action', {}).get('storage', 'swift'),
-                  action.get('freezer_action', {}).get('snapshot', 'False')
-                  ) for action in actions))
+        columns = ('Action ID', 'Name', 'Action',
+                   'Path to Backup or Restore', 'Mode', 'Storage', 'snapshot')
+
+        # Print empty table if no actions found
+        if not actions:
+            actions = [{}]
+            data = ((action.get('action-id', ''),
+                     action.get('freezer_action', {}).get('backup_name', ''),
+                     action.get('freezer_action', {}).get('action', ''),
+                     action.get('freezer_action', {}).get('path_to_backup', ''),
+                     action.get('freezer_action', {}).get('mode', ''),
+                     action.get('freezer_action', {}).get('storage', ''),
+                     action.get('freezer_action', {}).get('snapshot', '')
+                     ) for action in actions)
+        else:
+            data = ((action.get('action_id'),
+                     action.get('freezer_action', {}).get('backup_name', ''),
+                     action.get('freezer_action', {}).get('action', 'backup'),
+                     action.get('freezer_action', {}).get('path_to_backup', ''),
+                     action.get('freezer_action', {}).get('mode', 'fs'),
+                     action.get('freezer_action', {}).get('storage', 'swift'),
+                     action.get('freezer_action', {}).get('snapshot', 'False')
+                     ) for action in actions)
+
+        return columns, data
 
 
 class ActionDelete(command.Command):

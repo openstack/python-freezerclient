@@ -117,18 +117,29 @@ class JobList(lister.Lister):
                     search=search
             )
 
-        if not jobs:
-            print('No jobs')
+        columns = ('Job ID', 'Description', '# Actions', 'Result', 'Event',
+                   'Session ID')
 
-        return (('Job ID', 'Description', '# Actions', 'Result', 'Event',
-                 'Session ID'),
-                ((job.get('job_id'),
-                  job.get('description'),
-                  len(job.get('job_actions', [])),
-                  job.get('job_schedule', {}).get('result', ''),
-                  job.get('job_schedule', {}).get('event', ''),
-                  job.get('session_id', '')
-                  ) for job in jobs))
+        # Print empty table if no jobs found
+        if not jobs:
+            jobs = [{}]
+            data = ((job.get('job_id', ''),
+                     job.get('description', ''),
+                     job.get('job_actions', ''),
+                     job.get('job_schedule', {}).get('result', ''),
+                     job.get('job_schedule', {}).get('event', ''),
+                     job.get('session_id', '')
+                     ) for job in jobs)
+        else:
+            data = ((job.get('job_id'),
+                     job.get('description'),
+                     len(job.get('job_actions', [])),
+                     job.get('job_schedule', {}).get('result', ''),
+                     job.get('job_schedule', {}).get('event', ''),
+                     job.get('session_id', '')
+                     ) for job in jobs)
+
+        return columns, data
 
 
 class JobGet(command.Command):
