@@ -112,6 +112,7 @@ class SessionCreate(command.Command):
         parser = super(SessionCreate, self).get_parser(prog_name)
         parser.add_argument('--file',
                             dest='file',
+                            required=True,
                             help='Path to json file with the job')
         return parser
 
