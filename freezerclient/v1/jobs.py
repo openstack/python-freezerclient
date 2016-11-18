@@ -13,23 +13,20 @@
 # limitations under the License.
 
 import logging
+import pprint
 
-from pprint import pformat
-from pprint import pprint
-
-from cliff.command import Command
-from cliff.lister import Lister
-from cliff.show import ShowOne
+from cliff import command
+from cliff import lister
+from cliff import show
 
 from freezerclient import exceptions
-from freezerclient.utils import doc_from_json_file
-from freezerclient.utils import prepare_search
+from freezerclient import utils
 
 
 logging = logging.getLogger(__name__)
 
 
-class JobShow(ShowOne):
+class JobShow(show.ShowOne):
     """Show a single job"""
     def get_parser(self, prog_name):
         parser = super(JobShow, self).get_parser(prog_name)
@@ -60,7 +57,7 @@ class JobShow(ShowOne):
             job.get('user_id'),
             job.get('session_id', ''),
             job.get('description'),
-            pformat(job.get('job_actions')),
+            pprint.pformat(job.get('job_actions')),
             job.get('job_schedule', {}).get('schedule_start_date', ''),
             job.get('job_schedule', {}).get('schedule_interval', ''),
             job.get('job_schedule', {}).get('schedule_end_date', ''),
@@ -68,7 +65,7 @@ class JobShow(ShowOne):
         return column, data
 
 
-class JobList(Lister):
+class JobList(lister.Lister):
     """List all the jobs for your user"""
     def get_parser(self, prog_name):
         parser = super(JobList, self).get_parser(prog_name)
@@ -104,7 +101,7 @@ class JobList(Lister):
 
     def take_action(self, parsed_args):
 
-        search = prepare_search(parsed_args.search)
+        search = utils.prepare_search(parsed_args.search)
 
         if parsed_args.client_id:
             jobs = self.app.client.jobs.list(
@@ -134,7 +131,7 @@ class JobList(Lister):
                   ) for job in jobs))
 
 
-class JobGet(Command):
+class JobGet(command.Command):
     """Download a job as a json file"""
     def get_parser(self, prog_name):
         parser = super(JobGet, self).get_parser(prog_name)
@@ -157,10 +154,10 @@ class JobGet(Command):
         if parsed_args.no_format:
             print(job)
         else:
-            pprint(job)
+            pprint.pprint(job)
 
 
-class JobDelete(Command):
+class JobDelete(command.Command):
     """Delete a job from the api"""
     def get_parser(self, prog_name):
         parser = super(JobDelete, self).get_parser(prog_name)
@@ -173,7 +170,7 @@ class JobDelete(Command):
         logging.info('Job {0} deleted'.format(parsed_args.job_id))
 
 
-class JobCreate(Command):
+class JobCreate(command.Command):
     """Create a new job from a file"""
     def get_parser(self, prog_name):
         parser = super(JobCreate, self).get_parser(prog_name)
@@ -183,12 +180,12 @@ class JobCreate(Command):
         return parser
 
     def take_action(self, parsed_args):
-        job = doc_from_json_file(parsed_args.file)
+        job = utils.doc_from_json_file(parsed_args.file)
         job_id = self.app.client.jobs.create(job)
         logging.info('Job {0} created'.format(job_id))
 
 
-class JobStart(Command):
+class JobStart(command.Command):
     """Send a start signal for a job"""
     def get_parser(self, prog_name):
         parser = super(JobStart, self).get_parser(prog_name)
@@ -201,7 +198,7 @@ class JobStart(Command):
         logging.info('Job {0} has started'.format(parsed_args.job_id))
 
 
-class JobStop(Command):
+class JobStop(command.Command):
     """Send a stop signal for a job"""
     def get_parser(self, prog_name):
         parser = super(JobStop, self).get_parser(prog_name)
@@ -214,7 +211,7 @@ class JobStop(Command):
         logging.info('Job {0} has stopped'.format(parsed_args.job_id))
 
 
-class JobAbort(Command):
+class JobAbort(command.Command):
     """Abort a running job"""
     def get_parser(self, prog_name):
         parser = super(JobAbort, self).get_parser(prog_name)
@@ -227,7 +224,7 @@ class JobAbort(Command):
         logging.info('Job {0} has been aborted'.format(parsed_args.job_id))
 
 
-class JobUpdate(Command):
+class JobUpdate(command.Command):
     """Update a job from a file"""
     def get_parser(self, prog_name):
         parser = super(JobUpdate, self).get_parser(prog_name)
@@ -239,6 +236,6 @@ class JobUpdate(Command):
         return parser
 
     def take_action(self, parsed_args):
-        job = doc_from_json_file(parsed_args.file)
+        job = utils.doc_from_json_file(parsed_args.file)
         self.app.client.jobs.update(parsed_args.job_id, job)
         logging.info('Job {0} updated'.format(parsed_args.job_id))

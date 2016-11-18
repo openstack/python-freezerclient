@@ -16,8 +16,8 @@ import logging
 import os
 import sys
 
-from cliff.app import App
-from cliff.commandmanager import CommandManager
+from cliff import app
+from cliff import commandmanager
 
 from freezerclient.v1 import actions
 from freezerclient.v1 import backups
@@ -32,7 +32,7 @@ log = logging.getLogger(__name__)
 logging.getLogger('requests').setLevel(logging.WARN)
 
 
-class FreezerCommandManager(CommandManager):
+class FreezerCommandManager(commandmanager.CommandManager):
     """All commands available for the shell are registered here"""
     SHELL_COMMANDS = {
         'job-show': jobs.JobShow,
@@ -70,7 +70,7 @@ class FreezerCommandManager(CommandManager):
             self.add_command(name, command_class)
 
 
-class FreezerShell(App):
+class FreezerShell(app.App):
     def __init__(self):
         super(FreezerShell, self).__init__(
             description='Python Freezer Client',

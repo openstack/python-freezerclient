@@ -16,7 +16,7 @@ import json
 import requests
 
 from freezerclient import exceptions
-from freezerclient.utils import create_headers_for_request
+from freezerclient import utils
 
 
 class SessionManager(object):
@@ -28,7 +28,7 @@ class SessionManager(object):
 
     @property
     def headers(self):
-        return create_headers_for_request(self.client.auth_token)
+        return utils.create_headers_for_request(self.client.auth_token)
 
     def create(self, doc, session_id=''):
         session_id = session_id or doc.get('session_id', '')

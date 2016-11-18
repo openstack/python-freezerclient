@@ -13,21 +13,20 @@
 # limitations under the License.
 
 import logging
+import pprint
 
-from pprint import pformat
-
-from cliff.command import Command
-from cliff.lister import Lister
-from cliff.show import ShowOne
+from cliff import command
+from cliff import lister
+from cliff import show
 
 from freezerclient import exceptions
-from freezerclient.utils import doc_from_json_file
+from freezerclient import utils
 
 
 logging = logging.getLogger(__name__)
 
 
-class SessionShow(ShowOne):
+class SessionShow(show.ShowOne):
     """Show a single session"""
     def get_parser(self, prog_name):
         parser = super(SessionShow, self).get_parser(prog_name)
@@ -52,12 +51,12 @@ class SessionShow(ShowOne):
             session.get('session_id'),
             session.get('description'),
             session.get('status'),
-            pformat(session.get('jobs'))
+            pprint.pformat(session.get('jobs'))
         )
         return column, data
 
 
-class SessionList(Lister):
+class SessionList(lister.Lister):
     """List all the sessions for your user"""
     def get_parser(self, prog_name):
         parser = super(SessionList, self).get_parser(prog_name)
@@ -99,7 +98,7 @@ class SessionList(Lister):
                   ) for session in sessions))
 
 
-class SessionCreate(Command):
+class SessionCreate(command.Command):
     """Create a session from a file"""
     def get_parser(self, prog_name):
         parser = super(SessionCreate, self).get_parser(prog_name)
@@ -109,12 +108,12 @@ class SessionCreate(Command):
         return parser
 
     def take_action(self, parsed_args):
-        session = doc_from_json_file(parsed_args.file)
+        session = utils.doc_from_json_file(parsed_args.file)
         session_id = self.app.client.sessions.create(session)
         logging.info('Session {0} created'.format(session_id))
 
 
-class SessionAddJob(Command):
+class SessionAddJob(command.Command):
     """Add a job to a session"""
     def get_parser(self, prog_name):
         parser = super(SessionAddJob, self).get_parser(prog_name)
@@ -133,7 +132,7 @@ class SessionAddJob(Command):
             parsed_args.job_id, parsed_args.session_id))
 
 
-class SessionRemoveJob(Command):
+class SessionRemoveJob(command.Command):
     """Remove a job from a session"""
     def get_parser(self, prog_name):
         parser = super(SessionRemoveJob, self).get_parser(prog_name)
@@ -163,7 +162,7 @@ class SessionRemoveJob(Command):
                 parsed_args.job_id, parsed_args.session_id))
 
 
-class SessionStart(Command):
+class SessionStart(command.Command):
     """Start a session"""
     def get_parser(self, prog_name):
         pass
@@ -172,7 +171,7 @@ class SessionStart(Command):
         pass
 
 
-class SessionEnd(Command):
+class SessionEnd(command.Command):
     """Stop a session"""
     def get_parser(self, prog_name):
         pass
@@ -181,7 +180,7 @@ class SessionEnd(Command):
         pass
 
 
-class SessionUpdate(Command):
+class SessionUpdate(command.Command):
     """Update a session from a file"""
     def get_parser(self, prog_name):
         parser = super(SessionUpdate, self).get_parser(prog_name)
@@ -193,6 +192,6 @@ class SessionUpdate(Command):
         return parser
 
     def take_action(self, parsed_args):
-        session = doc_from_json_file(parsed_args.file)
+        session = utils.doc_from_json_file(parsed_args.file)
         self.app.client.sessions.update(parsed_args.session_id, session)
         logging.info('Session {0} updated'.format(parsed_args.session_id))
