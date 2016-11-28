@@ -107,7 +107,8 @@ class ActionList(lister.Lister):
             data = ((action.get('action-id', ''),
                      action.get('freezer_action', {}).get('backup_name', ''),
                      action.get('freezer_action', {}).get('action', ''),
-                     action.get('freezer_action', {}).get('path_to_backup', ''),
+                     action.get('freezer_action', {}).get(
+                         'path_to_backup', ''),
                      action.get('freezer_action', {}).get('mode', ''),
                      action.get('freezer_action', {}).get('storage', ''),
                      action.get('freezer_action', {}).get('snapshot', '')
@@ -116,7 +117,8 @@ class ActionList(lister.Lister):
             data = ((action.get('action_id'),
                      action.get('freezer_action', {}).get('backup_name', ''),
                      action.get('freezer_action', {}).get('action', 'backup'),
-                     action.get('freezer_action', {}).get('path_to_backup', ''),
+                     action.get('freezer_action', {}).get(
+                         'path_to_backup', ''),
                      action.get('freezer_action', {}).get('mode', 'fs'),
                      action.get('freezer_action', {}).get('storage', 'swift'),
                      action.get('freezer_action', {}).get('snapshot', 'False')

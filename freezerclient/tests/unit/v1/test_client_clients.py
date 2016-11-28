@@ -12,15 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import mock
 import unittest
+
+import mock
 
 from freezerclient import exceptions
 from freezerclient.v1.client import clients
 
 
 class TestClientManager(unittest.TestCase):
-
     def setUp(self):
         self.mock_client = mock.Mock()
         self.mock_client.endpoint = 'http://testendpoint:9999'
@@ -29,7 +29,8 @@ class TestClientManager(unittest.TestCase):
 
     @mock.patch('freezerclient.v1.managers.clients.requests')
     def test_create(self, mock_requests):
-        self.assertEqual('http://testendpoint:9999/v1/clients/', self.r.endpoint)
+        self.assertEqual('http://testendpoint:9999/v1/clients/',
+                         self.r.endpoint)
         self.assertEqual({'X-Auth-Token': 'testtoken',
                           'Content-Type': 'application/json',
                           'Accept': 'application/json'},
@@ -49,7 +50,8 @@ class TestClientManager(unittest.TestCase):
         mock_response = mock.Mock()
         mock_response.status_code = 500
         mock_requests.post.return_value = mock_response
-        self.assertRaises(exceptions.ApiClientException, self.r.create, {'client': 'metadata'})
+        self.assertRaises(exceptions.ApiClientException, self.r.create,
+                          {'client': 'metadata'})
 
     @mock.patch('freezerclient.v1.managers.clients.requests')
     def test_delete_ok(self, mock_requests):
@@ -64,7 +66,8 @@ class TestClientManager(unittest.TestCase):
         mock_response = mock.Mock()
         mock_response.status_code = 500
         mock_requests.delete.return_value = mock_response
-        self.assertRaises(exceptions.ApiClientException, self.r.delete, 'test_client_id')
+        self.assertRaises(exceptions.ApiClientException, self.r.delete,
+                          'test_client_id')
 
     @mock.patch('freezerclient.v1.managers.clients.requests')
     def test_get_ok(self, mock_requests):
@@ -84,17 +87,20 @@ class TestClientManager(unittest.TestCase):
         self.assertIsNone(retval)
 
     @mock.patch('freezerclient.v1.managers.clients.requests')
-    def test_get_raises_ApiClientException_on_error_not_404(self, mock_requests):
+    def test_get_raises_ApiClientException_on_error_not_404(self,
+                                                            mock_requests):
         mock_response = mock.Mock()
         mock_response.status_code = 500
         mock_requests.get.return_value = mock_response
-        self.assertRaises(exceptions.ApiClientException, self.r.get, 'test_client_id')
+        self.assertRaises(exceptions.ApiClientException, self.r.get,
+                          'test_client_id')
 
     @mock.patch('freezerclient.v1.managers.clients.requests')
     def test_list_ok(self, mock_requests):
         mock_response = mock.Mock()
         mock_response.status_code = 200
-        client_list = [{'client_id_0': 'qwerqwer'}, {'client_id_1': 'asdfasdf'}]
+        client_list = [{'client_id_0': 'qwerqwer'},
+                       {'client_id_1': 'asdfasdf'}]
         mock_response.json.return_value = {'clients': client_list}
         mock_requests.get.return_value = mock_response
         retval = self.r.list()
@@ -104,8 +110,8 @@ class TestClientManager(unittest.TestCase):
     def test_list_error(self, mock_requests):
         mock_response = mock.Mock()
         mock_response.status_code = 404
-        client_list = [{'client_id_0': 'qwerqwer'}, {'client_id_1': 'asdfasdf'}]
+        client_list = [{'client_id_0': 'qwerqwer'},
+                       {'client_id_1': 'asdfasdf'}]
         mock_response.json.return_value = {'clients': client_list}
         mock_requests.get.return_value = mock_response
         self.assertRaises(exceptions.ApiClientException, self.r.list)
-

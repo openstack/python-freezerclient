@@ -12,16 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import unittest
 
 import mock
-import unittest
 
 from freezerclient import exceptions
 from freezerclient.v1.managers import backups
 
 
 class TestBackupManager(unittest.TestCase):
-
     def setUp(self):
         self.mock_client = mock.Mock()
         self.mock_client.endpoint = 'http://testendpoint:9999'
@@ -30,7 +29,8 @@ class TestBackupManager(unittest.TestCase):
 
     @mock.patch('freezerclient.v1.managers.backups.requests')
     def test_create(self, mock_requests):
-        self.assertEqual('http://testendpoint:9999/v1/backups/', self.b.endpoint)
+        self.assertEqual('http://testendpoint:9999/v1/backups/',
+                         self.b.endpoint)
         self.assertEqual({'X-Auth-Token': 'testtoken',
                           'Content-Type': 'application/json',
                           'Accept': 'application/json'},
@@ -50,7 +50,8 @@ class TestBackupManager(unittest.TestCase):
         mock_response = mock.Mock()
         mock_response.status_code = 500
         mock_requests.post.return_value = mock_response
-        self.assertRaises(exceptions.ApiClientException, self.b.create, {'backup': 'metadata'})
+        self.assertRaises(exceptions.ApiClientException, self.b.create,
+                          {'backup': 'metadata'})
 
     @mock.patch('freezerclient.v1.managers.backups.requests')
     def test_delete_ok(self, mock_requests):
@@ -65,7 +66,8 @@ class TestBackupManager(unittest.TestCase):
         mock_response = mock.Mock()
         mock_response.status_code = 500
         mock_requests.delete.return_value = mock_response
-        self.assertRaises(exceptions.ApiClientException, self.b.delete, 'test_backup_id')
+        self.assertRaises(exceptions.ApiClientException, self.b.delete,
+                          'test_backup_id')
 
     @mock.patch('freezerclient.v1.managers.backups.requests')
     def test_get_ok(self, mock_requests):
@@ -96,7 +98,8 @@ class TestBackupManager(unittest.TestCase):
     def test_list_ok(self, mock_requests):
         mock_response = mock.Mock()
         mock_response.status_code = 200
-        backup_list = [{'backup_id_0': 'qwerqwer'}, {'backup_id_1': 'asdfasdf'}]
+        backup_list = [{'backup_id_0': 'qwerqwer'},
+                       {'backup_id_1': 'asdfasdf'}]
         mock_response.json.return_value = {'backups': backup_list}
         mock_requests.get.return_value = mock_response
         retval = self.b.list()
@@ -106,7 +109,8 @@ class TestBackupManager(unittest.TestCase):
     def test_list_parameters(self, mock_requests):
         mock_response = mock.Mock()
         mock_response.status_code = 200
-        backup_list = [{'backup_id_0': 'qwerqwer'}, {'backup_id_1': 'asdfasdf'}]
+        backup_list = [{'backup_id_0': 'qwerqwer'},
+                       {'backup_id_1': 'asdfasdf'}]
         mock_response.json.return_value = {'backups': backup_list}
         mock_requests.get.return_value = mock_response
         retval = self.b.list(limit=5,
@@ -126,8 +130,8 @@ class TestBackupManager(unittest.TestCase):
     def test_list_error(self, mock_requests):
         mock_response = mock.Mock()
         mock_response.status_code = 404
-        backup_list = [{'backup_id_0': 'qwerqwer'}, {'backup_id_1': 'asdfasdf'}]
+        backup_list = [{'backup_id_0': 'qwerqwer'},
+                       {'backup_id_1': 'asdfasdf'}]
         mock_response.json.return_value = {'backups': backup_list}
         mock_requests.get.return_value = mock_response
         self.assertRaises(exceptions.ApiClientException, self.b.list)
-

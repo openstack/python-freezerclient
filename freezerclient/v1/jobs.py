@@ -105,16 +105,16 @@ class JobList(lister.Lister):
 
         if parsed_args.client_id:
             jobs = self.app.client.jobs.list(
-                    limit=parsed_args.limit,
-                    offset=parsed_args.offset,
-                    search=search,
-                    client_id=parsed_args.client_id
+                limit=parsed_args.limit,
+                offset=parsed_args.offset,
+                search=search,
+                client_id=parsed_args.client_id
             )
         else:
             jobs = self.app.client.jobs.list_all(
-                    limit=parsed_args.limit,
-                    offset=parsed_args.offset,
-                    search=search
+                limit=parsed_args.limit,
+                offset=parsed_args.offset,
+                search=search
             )
 
         columns = ('Job ID', 'Description', '# Actions', 'Result', 'Event',

@@ -96,12 +96,12 @@ class SessionList(lister.Lister):
 
         columns = ('Session ID', 'Description', 'Status', '# Jobs')
         data = ((
-                    session.get('session_id', ''),
-                    session.get('description', ''),
-                    session.get('status', ''),
-                    len(session.get('jobs', [])) if session.get(
-                        'session_id') else '',
-                ) for session in sessions)
+            session.get('session_id', ''),
+            session.get('description', ''),
+            session.get('status', ''),
+            len(session.get('jobs', [])) if session.get(
+                'session_id') else '',
+        ) for session in sessions)
 
         return columns, data
 
@@ -181,7 +181,8 @@ class SessionRemoveJob(command.Command):
         except Exception as error:
             # there is an error coming from the api when a job is removed
             # with the following text:
-            # Additional properties are not allowed ('job_event' was unexpected)
+            # Additional properties are not allowed
+            # ('job_event' was unexpected)
             # but in reality the job gets removed correctly.
             if 'Additional properties are not allowed' in error.message:
                 pass

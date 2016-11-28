@@ -95,11 +95,11 @@ class ClientList(lister.Lister):
 
         columns = ('Client ID', 'uuid', 'hostname', 'description')
         data = ((
-                    client.get('client', {}).get('client_id', ''),
-                    client.get('uuid', ''),
-                    client.get('client', {}).get('hostname', ''),
-                    client.get('client', {}).get('description', '')
-                ) for client in clients)
+            client.get('client', {}).get('client_id', ''),
+            client.get('uuid', ''),
+            client.get('client', {}).get('hostname', ''),
+            client.get('client', {}).get('description', '')
+        ) for client in clients)
 
         return columns, data
 

@@ -125,7 +125,7 @@ class SessionManager(object):
         doc = {"start": {
             "job_id": job_id,
             "current_tag": session_tag
-            }}
+        }}
         r = requests.post(endpoint,
                           headers=self.headers,
                           data=json.dumps(doc),
@@ -151,7 +151,7 @@ class SessionManager(object):
             "job_id": job_id,
             "current_tag": session_tag,
             "result": result
-            }}
+        }}
         r = requests.post(endpoint,
                           headers=self.headers,
                           data=json.dumps(doc),

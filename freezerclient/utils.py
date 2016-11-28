@@ -16,7 +16,6 @@
 import json
 import logging
 
-
 logging = logging.getLogger(__name__)
 
 
@@ -57,7 +56,7 @@ class Namespace(dict):
     def from_object(cls, obj, names=None):
         if names is None:
             names = dir(obj)
-        ns = {name:getattr(obj, name) for name in names}
+        ns = {name: getattr(obj, name) for name in names}
         return cls(ns)
 
     @classmethod
@@ -94,7 +93,6 @@ class Namespace(dict):
 
 
 class CachedProperty(object):
-
     def __init__(self, func):
         self.__doc__ = getattr(func, '__doc__')
         self.func = func
@@ -140,4 +138,3 @@ def prepare_search(search_term):
     if search_term:
         return {"match": [{"_all": search_term}, ], }
     return {}
-

@@ -117,4 +117,3 @@ class BackupList(lister.Lister):
                      ) for b in backups)
 
         return columns, data
-

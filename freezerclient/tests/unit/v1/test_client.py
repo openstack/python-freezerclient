@@ -12,9 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import unittest
 
 import mock
-import unittest
+
 
 from freezerclient.v1 import client
 
@@ -89,7 +90,8 @@ class TestSupportFunctions(unittest.TestCase):
 
     @mock.patch('freezerclient.v1.client.v3')
     @mock.patch('freezerclient.v1.client.v2')
-    def test_get_auth_plugin_raises_when_no_username_token(self, mock_v2, mock_v3):
+    def test_get_auth_plugin_raises_when_no_username_token(self, mock_v2,
+                                                           mock_v3):
         mock_opts = mock.Mock()
         mock_opts.os_identity_api_version = '2.0'
         mock_opts.os_username = ''
@@ -107,7 +109,8 @@ class TestClientMock(unittest.TestCase):
 
     @mock.patch('freezerclient.v1.client.ksa_session')
     @mock.patch('freezerclient.v1.client.get_auth_plugin')
-    def test_client_new_with_kwargs(self, mock_get_auth_plugin, mock_ksa_session):
+    def test_client_new_with_kwargs(self, mock_get_auth_plugin,
+                                    mock_ksa_session):
         kwargs = {'token': 'alpha',
                   'username': 'bravo',
                   'password': 'charlie',
@@ -140,7 +143,8 @@ class TestClientMock(unittest.TestCase):
     @mock.patch('freezerclient.v1.client.socket')
     @mock.patch('freezerclient.v1.client.ksa_session')
     @mock.patch('freezerclient.v1.client.get_auth_plugin')
-    def test_get_client_id(self, mock_get_auth_plugin, mock_ksa_session, mock_socket):
+    def test_get_client_id(self, mock_get_auth_plugin, mock_ksa_session,
+                           mock_socket):
         mock_socket.gethostname.return_value = 'parmenide'
         mock_session = mock.Mock()
         mock_session.get_project_id.return_value = 'H2O'
