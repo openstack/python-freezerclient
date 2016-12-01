@@ -90,22 +90,18 @@ class SessionList(lister.Lister):
             search=parsed_args.search
         )
 
-        columns = ('Session ID', 'Description', 'Status', '# Jobs')
-
         # Print empty table if no sessions found
         if not sessions:
             sessions = [{}]
-            data = ((session.get('session_id', ''),
-                     session.get('description', ''),
-                     session.get('status', ''),
-                     session.get('jobs', ''),
-                     ) for session in sessions)
-        else:
-            data = ((session.get('session_id'),
-                     session.get('description'),
-                     session.get('status'),
-                     len(session.get('jobs', [])),
-                     ) for session in sessions)
+
+        columns = ('Session ID', 'Description', 'Status', '# Jobs')
+        data = ((
+                    session.get('session_id', ''),
+                    session.get('description', ''),
+                    session.get('status', ''),
+                    len(session.get('jobs', [])) if session.get(
+                        'session_id') else '',
+                ) for session in sessions)
 
         return columns, data
 
@@ -172,24 +168,6 @@ class SessionRemoveJob(command.Command):
         else:
             logging.info('Job {0} removed correctly from session {1}'.format(
                 parsed_args.job_id, parsed_args.session_id))
-
-
-class SessionStart(command.Command):
-    """Start a session"""
-    def get_parser(self, prog_name):
-        pass
-
-    def take_action(self, parsed_args):
-        pass
-
-
-class SessionEnd(command.Command):
-    """Stop a session"""
-    def get_parser(self, prog_name):
-        pass
-
-    def take_action(self, parsed_args):
-        pass
 
 
 class SessionUpdate(command.Command):
