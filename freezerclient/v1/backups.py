@@ -16,6 +16,7 @@ import datetime
 import logging
 import pprint
 
+from cliff import command
 from cliff import lister
 from cliff import show
 
@@ -30,33 +31,21 @@ class BackupShow(show.ShowOne):
     """Show the metadata of a single backup"""
     def get_parser(self, prog_name):
         parser = super(BackupShow, self).get_parser(prog_name)
-        parser.add_argument(dest='backup_uuid',
-                            help='UUID of the backup')
+        parser.add_argument(dest='backup_id',
+                            help='ID of the backup')
         return parser
 
     def take_action(self, parsed_args):
-        # due to the fact that a backup_id is composed of several strings
-        # some of them may include a slash "/" so it will never find the
-        # correct backup, so the workaround for this version is to use the
-        # backup_uuid as a filter for the search. this won't work when the
-        # user wants to delete a backup, but that functionality is yet to be
-        # provided by the api.
-        search = {"match": [{"backup_uuid": parsed_args.backup_uuid}, ], }
-        backup = self.app.client.backups.list(search=search)
-
+        backup = self.app.client.backups.get(parsed_args.backup_id)
         if not backup:
             raise exceptions.ApiClientException('Backup not found')
 
-        backup = backup[0]
-
         column = (
             'Backup ID',
-            'Backup UUID',
             'Metadata'
         )
         data = (
             backup.get('backup_id'),
-            backup.get('backup_uuid'),
             pprint.pformat(backup.get('backup_metadata'))
         )
         return column, data
@@ -96,24 +85,39 @@ class BackupList(lister.Lister):
                                                offset=parsed_args.offset,
                                                search=search)
 
-        columns = ('Backup UUID', 'Hostname', 'Path', 'Created at', 'Level')
+        columns = ('Backup ID', 'Hostname', 'Path', 'Created at', 'Level')
 
         # Print empty table if no backups found
         if not backups:
             backups = [{}]
-            data = ((b.get('backup_uuid', ''),
-                     b.get('backup_metadata', {}).get('hostname', ''),
-                     b.get('backup_metadata', {}).get('path_to_backup', ''),
-                     b.get('backup_metadata', {}).get('time_stamp', ''),
-                     b.get('backup_metadata', {}).get('curr_backup_level', '')
-                     ) for b in backups)
-        else:
-            data = ((b.get('backup_uuid'),
-                     b.get('backup_metadata', {}).get('hostname'),
-                     b.get('backup_metadata', {}).get('path_to_backup'),
-                     datetime.datetime.fromtimestamp(
-                         int(b.get('backup_metadata', {}).get('time_stamp'))),
-                     b.get('backup_metadata', {}).get('curr_backup_level')
-                     ) for b in backups)
+
+        data = ((b.get('backup_id', ''),
+                 b.get('backup_metadata', {}).get('hostname', ''),
+                 b.get('backup_metadata', {}).get('path_to_backup', ''),
+                 datetime.datetime.fromtimestamp(
+                     int(b.get('backup_metadata', {}).get(
+                         'time_stamp', ''))) if b.get(
+                     'backup_metadata') else '',
+                 b.get('backup_metadata', {}).get('curr_backup_level', '')
+                 ) for b in backups)
 
         return columns, data
+
+
+class BackupDelete(command.Command):
+    """Delete a backup from the api"""
+    def get_parser(self, prog_name):
+        parser = super(BackupDelete, self).get_parser(prog_name)
+        parser.add_argument(dest='backup_id',
+                            help='ID of the backup')
+        return parser
+
+    def take_action(self, parsed_args):
+        # Need to check that backup exists
+        backup = self.app.client.backups.get(parsed_args.backup_id)
+        if not backup:
+            logging.info("Unable to delete specified backup.")
+            raise exceptions.ApiClientException('Backup not found')
+
+        self.app.client.backups.delete(parsed_args.backup_id)
+        logging.info('Backup {0} deleted'.format(parsed_args.backup_id))
