@@ -59,8 +59,8 @@ class JobShow(show.ShowOne):
             job.get('description'),
             pprint.pformat(job.get('job_actions')),
             job.get('job_schedule', {}).get('schedule_start_date', ''),
-            job.get('job_schedule', {}).get('schedule_interval', ''),
             job.get('job_schedule', {}).get('schedule_end_date', ''),
+            job.get('job_schedule', {}).get('schedule_interval', ''),
         )
         return column, data
 
