@@ -121,6 +121,24 @@ class SessionCreate(command.Command):
         logging.info('Session {0} created'.format(session_id))
 
 
+class SessionDelete(command.Command):
+    """Delete a session"""
+    def get_parser(self, prog_name):
+        parser = super(SessionDelete, self).get_parser(prog_name)
+        parser.add_argument(dest='session_id',
+                            help='ID of the session')
+        return parser
+
+    def take_action(self, parsed_args):
+        session = self.app.client.sessions.get(parsed_args.session_id)
+        if not session:
+            logging.info('Unable to delete specified session.')
+            raise exceptions.ApiClientException('Session not found')
+
+        self.app.client.sessions.delete(parsed_args.session_id)
+        logging.info('Session {0} deleted'.format(parsed_args.session_id))
+
+
 class SessionAddJob(command.Command):
     """Add a job to a session"""
     def get_parser(self, prog_name):

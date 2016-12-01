@@ -53,6 +53,7 @@ class FreezerCommandManager(commandmanager.CommandManager):
         'session-list': sessions.SessionList,
         'session-show': sessions.SessionShow,
         'session-create': sessions.SessionCreate,
+        'session-delete': sessions.SessionDelete,
         'session-add-job': sessions.SessionAddJob,
         'session-remove-job': sessions.SessionRemoveJob,
         'session-update': sessions.SessionUpdate,
