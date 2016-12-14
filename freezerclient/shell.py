@@ -50,6 +50,7 @@ class FreezerCommandManager(commandmanager.CommandManager):
         'client-delete': clients.ClientDelete,
         'backup-list': backups.BackupList,
         'backup-show': backups.BackupShow,
+        'backup-delete': backups.BackupDelete,
         'session-list': sessions.SessionList,
         'session-show': sessions.SessionShow,
         'session-create': sessions.SessionCreate,
