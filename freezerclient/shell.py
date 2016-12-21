@@ -19,6 +19,7 @@ import sys
 from cliff import app
 from cliff import commandmanager
 
+import freezerclient
 from freezerclient.v1 import actions
 from freezerclient.v1 import backups
 from freezerclient.v1 import client
@@ -74,7 +75,7 @@ class FreezerShell(app.App):
     def __init__(self):
         super(FreezerShell, self).__init__(
             description='Python Freezer Client',
-            version='0.1',
+            version=freezerclient.__version__,
             deferred_help=True,
             command_manager=FreezerCommandManager(None),
         )
