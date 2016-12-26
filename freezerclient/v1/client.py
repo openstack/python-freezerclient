@@ -55,7 +55,9 @@ def get_auth_plugin(opts):
                                password=opts.os_password,
                                project_name=opts.os_project_name,
                                user_domain_name=opts.os_user_domain_name,
-                               project_domain_name=opts.os_project_domain_name)
+                               user_domain_id=opts.os_user_domain_id,
+                               project_domain_name=opts.os_project_domain_name,
+                               project_domain_id=opts.os_project_domain_id)
         elif auth_version == '2.0':
             return v2.Password(auth_url=opts.os_auth_url,
                                username=opts.os_username,
@@ -66,7 +68,8 @@ def get_auth_plugin(opts):
             return v3.Token(auth_url=opts.os_auth_url,
                             token=opts.os_token,
                             project_name=opts.os_project_name,
-                            project_domain_name=opts.os_project_domain_name)
+                            project_domain_name=opts.os_project_domain_name,
+                            project_domain_id=opts.os_project_domain_id)
         elif auth_version == '2.0':
             return v2.Token(auth_url=opts.os_auth_url,
                             token=opts.os_token,
@@ -82,8 +85,9 @@ class Client(object):
     def __init__(self, version='3', token=None, username=None, password=None,
                  tenant_name=None, auth_url=None, session=None, endpoint=None,
                  endpoint_type=None, opts=None, project_name=None,
-                 user_domain_name=None, project_domain_name=None, verify=True,
-                 cert=None, insecure=False):
+                 user_domain_name=None, user_domain_id=None,
+                 project_domain_name=None, project_domain_id=None,
+                 verify=True, cert=None, insecure=False):
         """
         Initialize a new client for the Disaster Recovery v1 API.
         :param version: keystone version to use
@@ -98,7 +102,9 @@ class Client(object):
         :param opts: a namespace to store all keystone data
         :param project_name: only for version 3
         :param user_domain_name: only for version 3
+        :param user_domain_id: only for version 3
         :param project_domain_name: only for version 3
+        :param project_domain_id: only for version 3
         :param verify: The verification arguments to pass to requests.
                        These are of the same form as requests expects,
                        so True or False to verify (or not) against system
@@ -121,7 +127,9 @@ class Client(object):
             self.opts.os_endpoint_type = endpoint_type or None
             self.opts.os_project_name = project_name or None
             self.opts.os_user_domain_name = user_domain_name or None
+            self.opts.os_user_domain_id = user_domain_id or None
             self.opts.os_project_domain_name = project_domain_name or None
+            self.opts.os_project_domain_id = project_domain_id or None
             self.opts.auth_version = version
         else:
             self.opts = opts
