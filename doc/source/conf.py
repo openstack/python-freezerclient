@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-#
 # Freezer documentation build configuration file, created by
 # sphinx-quickstart on Thu Feb  4 22:27:35 2016.
 #
