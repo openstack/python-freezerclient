@@ -145,6 +145,14 @@ class FreezerShell(app.App):
         )
 
         parser.add_argument(
+            '--os-project-domain-id',
+            dest='os_project_domain_id',
+            default=os.environ.get('OS_PROJECT_DOMAIN_ID'),
+            help='OpenStack project domain ID. '
+                 'Defaults to env[OS_PROJECT_ID].'
+        )
+
+        parser.add_argument(
             '--os-project-name',
             dest='os_project_name',
             default=os.environ.get('OS_PROJECT_NAME'),
@@ -177,6 +185,14 @@ class FreezerShell(app.App):
             dest='os_user_domain_name',
             default=os.environ.get('OS_USER_DOMAIN_NAME'),
             help='User domain name'
+        )
+
+        parser.add_argument(
+            '--os-user-domain-id',
+            dest='os_user_domain_id',
+            default=os.environ.get('OS_USER_DOMAIN_ID'),
+            help='OpenStack user domain ID. '
+                 'Defaults to env[OS_USER_DOMAIN_ID].'
         )
 
         parser.add_argument(
@@ -222,7 +238,9 @@ class FreezerShell(app.App):
             'endpoint_type': self.options.os_endpoint_type,
             'project_name': self.options.os_project_name,
             'user_domain_name': self.options.os_user_domain_name,
+            'user_domain_id': self.options.os_user_domain_id,
             'project_domain_name': self.options.os_project_domain_name,
+            'project_domain_id': self.options.os_project_domain_id,
             'verify': True or self.options.os_cacert,
             'cert': self.options.os_cert,
             'insecure': self.options.insecure
