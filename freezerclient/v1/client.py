@@ -87,7 +87,7 @@ class Client(object):
                  endpoint_type=None, opts=None, project_name=None,
                  user_domain_name=None, user_domain_id=None,
                  project_domain_name=None, project_domain_id=None,
-                 verify=True, cert=None, insecure=False):
+                 cert=None, cacert=None, insecure=False):
         """
         Initialize a new client for the Disaster Recovery v1 API.
         :param version: keystone version to use
@@ -131,14 +131,18 @@ class Client(object):
             self.opts.os_project_domain_name = project_domain_name or None
             self.opts.os_project_domain_id = project_domain_id or None
             self.opts.auth_version = version
+            self.opts.os_cacert = cacert or None
+            self.opts.insecure = insecure
+            self.opts.cert = cert
         else:
             self.opts = opts
 
         self.cert = cert
+        self.cacert = cacert
         self._session = session
-        if insecure:
+        verify = self.opts.os_cacert
+        if self.opts.insecure:
             verify = False
-        self.verify = verify
 
         self.validate()
 
@@ -154,7 +158,8 @@ class Client(object):
             return self._session
         auth_plugin = get_auth_plugin(self.opts)
         return ksa_session.Session(auth=auth_plugin,
-                                   verify=self.verify,
+                                   verify=(self.cacert or
+                                           not self.opts.insecure),
                                    cert=self.cert)
 
     @utils.CachedProperty
