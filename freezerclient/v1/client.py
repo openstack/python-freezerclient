@@ -138,7 +138,7 @@ class Client(object):
             self.opts = opts
 
         self.cert = cert
-        self.cacert = cacert
+        self.cacert = cacert or self.opts.os_cacert
         self._session = session
         verify = self.opts.os_cacert
         if self.opts.insecure:
