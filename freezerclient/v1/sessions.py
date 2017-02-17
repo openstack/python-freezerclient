@@ -209,3 +209,37 @@ class SessionUpdate(command.Command):
         session = utils.doc_from_json_file(parsed_args.file)
         self.app.client.sessions.update(parsed_args.session_id, session)
         logging.info('Session {0} updated'.format(parsed_args.session_id))
+
+
+class SessionStart(command.Command):
+    """Start a session"""
+    def get_parser(self, prog_name):
+        parser = super(SessionStart, self).get_parser(prog_name)
+        parser.add_argument('--session-id',
+                            dest='session_id',
+                            required=True,
+                            help='ID of the session')
+        parser.add_argument('--job-id',
+                            dest='job_id',
+                            required=True,
+                            help='ID of the job')
+        parser.add_argument('--job-tag',
+                            dest='job_tag',
+                            required=True,
+                            help='Job tag value')
+
+        return parser
+
+    def take_action(self, parsed_args):
+        session = self.app.client.sessions.get(parsed_args.session_id)
+        if not session:
+            logging.info('Unable to start specified session.')
+            raise exceptions.ApiClientException('Session not found')
+
+        self.app.client.sessions.start_session(
+            parsed_args.session_id,
+            parsed_args.job_id,
+            parsed_args.job_tag
+        )
+        logging.info('Session {0} start requested'.format(
+            parsed_args.session_id))
