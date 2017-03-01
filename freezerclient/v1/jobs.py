@@ -207,7 +207,8 @@ class JobStart(command.Command):
 
     def take_action(self, parsed_args):
         self.app.client.jobs.start_job(parsed_args.job_id)
-        logging.info('Job {0} has started'.format(parsed_args.job_id))
+        logging.info("Start request sent "
+                     "for job {0}".format(parsed_args.job_id))
 
 
 class JobStop(command.Command):
@@ -220,7 +221,8 @@ class JobStop(command.Command):
 
     def take_action(self, parsed_args):
         self.app.client.jobs.stop_job(parsed_args.job_id)
-        logging.info('Job {0} has stopped'.format(parsed_args.job_id))
+        logging.info("Stop request sent "
+                     "for job {0}".format(parsed_args.job_id))
 
 
 class JobAbort(command.Command):
@@ -233,7 +235,8 @@ class JobAbort(command.Command):
 
     def take_action(self, parsed_args):
         self.app.client.jobs.abort_job(parsed_args.job_id)
-        logging.info('Job {0} has been aborted'.format(parsed_args.job_id))
+        logging.info("Abort request sent "
+                     "for job {0}".format(parsed_args.job_id))
 
 
 class JobUpdate(command.Command):
