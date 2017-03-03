@@ -113,14 +113,8 @@ class ClientDelete(command.Command):
         return parser
 
     def take_action(self, parsed_args):
-        # Need to check that client exists
-        client = self.app.client.clients.get(parsed_args.client_id)
-        if not client:
-            logging.info("Unable to delete specified client.")
-            raise exceptions.ApiClientException('Client not found')
-
-        self.app.client.clients.delete(parsed_args.client_id)
-        logging.info('Client {0} deleted'.format(parsed_args.client_id))
+        self.app.client.clients.delete(parsed_args.client_uuid)
+        logging.info('Client {0} deleted'.format(parsed_args.client_uuid))
 
 
 class ClientRegister(command.Command):
