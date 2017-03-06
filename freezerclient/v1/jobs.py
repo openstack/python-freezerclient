@@ -117,8 +117,8 @@ class JobList(lister.Lister):
                 search=search
             )
 
-        columns = ('Job ID', 'Description', '# Actions', 'Result', 'Event',
-                   'Session ID')
+        columns = ('Job ID', 'Description', '# Actions', 'Result', 'Status',
+                   'Event', 'Session ID')
 
         # Print empty table if no jobs found
         if not jobs:
@@ -127,6 +127,7 @@ class JobList(lister.Lister):
                      job.get('description', ''),
                      job.get('job_actions', ''),
                      job.get('job_schedule', {}).get('result', ''),
+                     job.get('job_schedule', {}).get('status', ''),
                      job.get('job_schedule', {}).get('event', ''),
                      job.get('session_id', '')
                      ) for job in jobs)
@@ -135,6 +136,7 @@ class JobList(lister.Lister):
                      job.get('description'),
                      len(job.get('job_actions', [])),
                      job.get('job_schedule', {}).get('result', ''),
+                     job.get('job_schedule', {}).get('status', ''),
                      job.get('job_schedule', {}).get('event', ''),
                      job.get('session_id', '')
                      ) for job in jobs)
