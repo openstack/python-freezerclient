@@ -31,12 +31,12 @@ class BackupShow(show.ShowOne):
     """Show the metadata of a single backup"""
     def get_parser(self, prog_name):
         parser = super(BackupShow, self).get_parser(prog_name)
-        parser.add_argument(dest='backup_id',
+        parser.add_argument(dest='backup_uuid',
                             help='ID of the backup')
         return parser
 
     def take_action(self, parsed_args):
-        backup = self.app.client.backups.get(parsed_args.backup_id)
+        backup = self.app.client.backups.get(parsed_args.backup_uuid)
         if not backup:
             raise exceptions.ApiClientException('Backup not found')
 
@@ -45,7 +45,7 @@ class BackupShow(show.ShowOne):
             'Metadata'
         )
         data = (
-            backup.get('backup_id'),
+            backup.get('backup_uuid'),
             pprint.pformat(backup.get('backup_metadata'))
         )
         return column, data
@@ -85,13 +85,15 @@ class BackupList(lister.Lister):
                                                offset=parsed_args.offset,
                                                search=search)
 
-        columns = ('Backup ID', 'Hostname', 'Path', 'Created at', 'Level')
+        columns = ('Backup ID', 'Backup UUID', 'Hostname', 'Path',
+                   'Created at', 'Level')
 
         # Print empty table if no backups found
         if not backups:
             backups = [{}]
 
         data = ((b.get('backup_id', ''),
+                 b.get('backup_uuid', ''),
                  b.get('backup_metadata', {}).get('hostname', ''),
                  b.get('backup_metadata', {}).get('path_to_backup', ''),
                  datetime.datetime.fromtimestamp(
@@ -108,16 +110,10 @@ class BackupDelete(command.Command):
     """Delete a backup from the api"""
     def get_parser(self, prog_name):
         parser = super(BackupDelete, self).get_parser(prog_name)
-        parser.add_argument(dest='backup_id',
-                            help='ID of the backup')
+        parser.add_argument(dest='backup_uuid',
+                            help='UUID of the backup')
         return parser
 
     def take_action(self, parsed_args):
-        # Need to check that backup exists
-        backup = self.app.client.backups.get(parsed_args.backup_id)
-        if not backup:
-            logging.info("Unable to delete specified backup.")
-            raise exceptions.ApiClientException('Backup not found')
-
-        self.app.client.backups.delete(parsed_args.backup_id)
-        logging.info('Backup {0} deleted'.format(parsed_args.backup_id))
+        self.app.client.backups.delete(parsed_args.backup_uuid)
+        logging.info('Backup {0} deleted'.format(parsed_args.backup_uuid))
