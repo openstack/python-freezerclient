@@ -57,7 +57,8 @@ def get_auth_plugin(opts):
                                user_domain_name=opts.os_user_domain_name,
                                user_domain_id=opts.os_user_domain_id,
                                project_domain_name=opts.os_project_domain_name,
-                               project_domain_id=opts.os_project_domain_id)
+                               project_domain_id=opts.os_project_domain_id,
+                               project_id=opts.os_project_id)
         elif auth_version == '2.0':
             return v2.Password(auth_url=opts.os_auth_url,
                                username=opts.os_username,
@@ -69,7 +70,8 @@ def get_auth_plugin(opts):
                             token=opts.os_token,
                             project_name=opts.os_project_name,
                             project_domain_name=opts.os_project_domain_name,
-                            project_domain_id=opts.os_project_domain_id)
+                            project_domain_id=opts.os_project_domain_id,
+                            project_id=opts.os_project_id)
         elif auth_version == '2.0':
             return v2.Token(auth_url=opts.os_auth_url,
                             token=opts.os_token,
@@ -87,7 +89,7 @@ class Client(object):
                  endpoint_type=None, opts=None, project_name=None,
                  user_domain_name=None, user_domain_id=None,
                  project_domain_name=None, project_domain_id=None,
-                 cert=None, cacert=None, insecure=False):
+                 cert=None, cacert=None, insecure=False, project_id=None):
         """
         Initialize a new client for the Disaster Recovery v1 API.
         :param version: keystone version to use
@@ -105,7 +107,8 @@ class Client(object):
         :param user_domain_id: only for version 3
         :param project_domain_name: only for version 3
         :param project_domain_id: only for version 3
-        :param verify: The verification arguments to pass to requests.
+        :param project_id: only for version 3
+        :param insecure: The verification arguments to pass to requests.
                        These are of the same form as requests expects,
                        so True or False to verify (or not) against system
                        certificates or a path to a bundle or CA certs to
@@ -126,6 +129,7 @@ class Client(object):
             self.opts.os_backup_url = endpoint or None
             self.opts.os_endpoint_type = endpoint_type or None
             self.opts.os_project_name = project_name or None
+            self.opts.os_project_id = project_id or None
             self.opts.os_user_domain_name = user_domain_name or None
             self.opts.os_user_domain_id = user_domain_id or None
             self.opts.os_project_domain_name = project_domain_name or None
