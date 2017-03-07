@@ -185,14 +185,24 @@ class JobCreate(command.Command):
     """Create a new job from a file"""
     def get_parser(self, prog_name):
         parser = super(JobCreate, self).get_parser(prog_name)
-        parser.add_argument('--file',
-                            dest='file',
-                            required=True,
-                            help='Path to json file with the job')
+        parser.add_argument(
+            '--file',
+            dest='file',
+            required=True,
+            help='Path to json file with the job')
+
+        parser.add_argument(
+            '--client', '-C',
+            dest='client_id',
+            required=True,
+            help='Select a client for this job',
+        )
+
         return parser
 
     def take_action(self, parsed_args):
         job = utils.doc_from_json_file(parsed_args.file)
+        job['client_id'] = parsed_args.client_id
         job_id = self.app.client.jobs.create(job)
         logging.info('Job {0} created'.format(job_id))
 
