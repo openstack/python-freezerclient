@@ -113,8 +113,8 @@ class ClientDelete(command.Command):
         return parser
 
     def take_action(self, parsed_args):
-        self.app.client.clients.delete(parsed_args.client_uuid)
-        logging.info('Client {0} deleted'.format(parsed_args.client_uuid))
+        self.app.client.clients.delete(parsed_args.client_id)
+        logging.info('Client {0} deleted'.format(parsed_args.client_id))
 
 
 class ClientRegister(command.Command):
