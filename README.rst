@@ -39,4 +39,4 @@ Development takes place via the usual OpenStack processes as outlined in the `de
 .. _Blueprints: https://blueprints.launchpad.net/python-freezerclient
 .. _Bugs: https://bugs.launchpad.net/python-freezerclient
 .. _Source: https://git.openstack.org/cgit/openstack/python-freezerclient
-.. _How to Contribute: http://docs.openstack.org/infra/manual/developers.html
+.. _How to Contribute: https://docs.openstack.org/infra/manual/developers.html
