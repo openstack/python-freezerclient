@@ -20,12 +20,8 @@ from cliff import app
 from cliff import commandmanager
 
 import freezerclient
-from freezerclient.v1 import actions
-from freezerclient.v1 import backups
-from freezerclient.v1 import client
-from freezerclient.v1 import clients
-from freezerclient.v1 import jobs
-from freezerclient.v1 import sessions
+from freezerclient.v1 import client as v1_client
+from freezerclient.v2 import client as v2_client
 
 
 log = logging.getLogger(__name__)
@@ -33,8 +29,36 @@ log = logging.getLogger(__name__)
 logging.getLogger('requests').setLevel(logging.WARN)
 
 
+def check_api_version():
+    """Check freezer version API to use
+    1: not multi-tenant, useful for infrastructure
+    2: multi-tenant, useful for backup as a service
+    :return: str
+    """
+    freezer_api_version = os.environ.get('OS_BACKUP_API_VERSION', '2')
+    if freezer_api_version == '1':
+        return '1'
+    elif freezer_api_version == '2':
+        return '2'
+    else:
+        raise Exception('Freezer API version not supported')
+
+
 class FreezerCommandManager(commandmanager.CommandManager):
     """All commands available for the shell are registered here"""
+    if check_api_version() == '1':
+        from freezerclient.v1 import actions
+        from freezerclient.v1 import backups
+        from freezerclient.v1 import clients
+        from freezerclient.v1 import jobs
+        from freezerclient.v1 import sessions
+    else:
+        from freezerclient.v2 import actions
+        from freezerclient.v2 import backups
+        from freezerclient.v2 import clients
+        from freezerclient.v2 import jobs
+        from freezerclient.v2 import sessions
+
     SHELL_COMMANDS = {
         'job-show': jobs.JobShow,
         'job-list': jobs.JobList,
@@ -175,6 +199,13 @@ class FreezerShell(app.App):
         )
 
         parser.add_argument(
+            '--os-project-id',
+            dest='os_project_id',
+            default=os.environ.get('OS_PROJECT_ID'),
+            help='Project to request authorization on'
+        )
+
+        parser.add_argument(
             '--os-tenant-name',
             dest='os_tenant_name',
             default=os.environ.get('OS_TENANT_NAME'),
@@ -225,7 +256,10 @@ class FreezerShell(app.App):
 
     @property
     def client(self):
-        """Build a client object to communicate with the API
+        """Factory function to create a new freezer service client.
+
+        The returned client will be either a V1 or V2 client.
+
         :return: freezerclient object
         """
         opts = {
@@ -238,6 +272,7 @@ class FreezerShell(app.App):
             'endpoint': self.options.os_backup_url,
             'endpoint_type': self.options.os_endpoint_type,
             'project_name': self.options.os_project_name,
+            'project_id': self.options.os_project_id,
             'user_domain_name': self.options.os_user_domain_name,
             'user_domain_id': self.options.os_user_domain_id,
             'project_domain_name': self.options.os_project_domain_name,
@@ -246,7 +281,10 @@ class FreezerShell(app.App):
             'cacert': self.options.os_cacert,
             'insecure': self.options.insecure
         }
-        return client.Client(**opts)
+        if check_api_version() == '1':
+            return v1_client.Client(**opts)
+        else:
+            return v2_client.Client(**opts)
 
 
 def main(argv=sys.argv[1:]):

@@ -1,0 +1,13 @@
+---
+prelude: >
+    Python freezer client now has the ability to use the version 2 of the API.
+features:
+  - |
+    Freezer client v2 support
+upgrade:
+  - |
+    for Backup as a service use "export OS_BACKUP_API=2"
+    for control plane backup use "export OS_BACKUP_API=1"
+critical:
+  - |
+    if no OS_BACKUP_API is use, freezerclient will default to version 2
