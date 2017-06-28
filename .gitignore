@@ -28,3 +28,5 @@ ChangeLog
 # Coverage data
 .coverage.*
 releasenotes/build
+
+.vscode/
