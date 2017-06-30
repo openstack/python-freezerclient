@@ -35,7 +35,7 @@ def check_api_version():
     2: multi-tenant, useful for backup as a service
     :return: str
     """
-    freezer_api_version = os.environ.get('OS_BACKUP_API_VERSION', '2')
+    freezer_api_version = os.environ.get('OS_BACKUP_API_VERSION', '1')
     if freezer_api_version == '1':
         return '1'
     elif freezer_api_version == '2':
