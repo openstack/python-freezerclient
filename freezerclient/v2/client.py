@@ -193,5 +193,5 @@ class Client(object):
         """Validate that the client objects gets created correctly.
         :return: bool
         """
-        if self.opts.os_auth_url is None:
+        if not self._session and self.opts.os_auth_url is None:
             raise Exception('OS_AUTH_URL should be provided.')
