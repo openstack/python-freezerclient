@@ -137,6 +137,7 @@ class Client(object):
             self.opts.os_project_domain_name = project_domain_name or None
             self.opts.os_project_domain_id = project_domain_id or None
             self.opts.auth_version = version
+            self.opts.os_identity_api_version = version
             self.opts.os_cacert = cacert or None
             self.opts.insecure = insecure
             self.opts.cert = cert
