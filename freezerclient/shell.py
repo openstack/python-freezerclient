@@ -102,7 +102,7 @@ class FreezerShell(app.App):
             description='Python Freezer Client',
             version=freezerclient.__version__,
             deferred_help=True,
-            command_manager=FreezerCommandManager(None),
+            command_manager=FreezerCommandManager('freezerclient'),
         )
 
     def build_option_parser(self, description, version):
