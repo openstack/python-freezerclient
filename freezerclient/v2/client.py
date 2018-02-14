@@ -152,6 +152,7 @@ class Client(object):
             verify = False
 
         self.validate()
+        self.project_id = project_id or self.get_project_id
 
         self.jobs = jobs.JobManager(self, verify=verify)
         self.clients = clients.ClientManager(self, verify=verify)
@@ -184,6 +185,10 @@ class Client(object):
     @property
     def auth_token(self):
         return self.session.get_token()
+
+    @property
+    def get_project_id(self):
+        return self.session.get_project_id()
 
     @utils.CachedProperty
     def client_id(self):
