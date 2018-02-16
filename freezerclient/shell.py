@@ -20,33 +20,16 @@ from cliff import app
 from cliff import commandmanager
 
 import freezerclient
-from freezerclient.v1 import client as v1_client
-from freezerclient.v2 import client as v2_client
-
+from freezerclient import utils
 
 log = logging.getLogger(__name__)
 # Suppress output from requests
 logging.getLogger('requests').setLevel(logging.WARN)
 
 
-def check_api_version():
-    """Check freezer version API to use
-    1: not multi-tenant, useful for infrastructure
-    2: multi-tenant, useful for backup as a service
-    :return: str
-    """
-    freezer_api_version = os.environ.get('OS_BACKUP_API_VERSION', '1')
-    if freezer_api_version == '1':
-        return '1'
-    elif freezer_api_version == '2':
-        return '2'
-    else:
-        raise Exception('Freezer API version not supported')
-
-
 class FreezerCommandManager(commandmanager.CommandManager):
     """All commands available for the shell are registered here"""
-    if check_api_version() == '1':
+    if utils.check_api_version() == '1':
         from freezerclient.v1 import actions
         from freezerclient.v1 import backups
         from freezerclient.v1 import clients
@@ -281,10 +264,7 @@ class FreezerShell(app.App):
             'cacert': self.options.os_cacert,
             'insecure': self.options.insecure
         }
-        if check_api_version() == '1':
-            return v1_client.Client(**opts)
-        else:
-            return v2_client.Client(**opts)
+        return utils.get_client_instance(opts)
 
 
 def main(argv=sys.argv[1:]):

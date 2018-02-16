@@ -15,6 +15,9 @@
 
 import json
 import logging
+import os
+
+from oslo_utils import importutils
 
 logging = logging.getLogger(__name__)
 
@@ -138,3 +141,40 @@ def prepare_search(search_term):
     if search_term:
         return {"match": [{"_all": search_term}, ], }
     return {}
+
+
+def check_api_version():
+    """Check freezer version API to use
+    1: not multi-tenant, useful for infrastructure
+    2: multi-tenant, useful for backup as a service
+    :return: str
+    """
+    freezer_api_version = os.environ.get('OS_BACKUP_API_VERSION', '2')
+    if freezer_api_version == '1':
+        return '1'
+    elif freezer_api_version == '2':
+        return '2'
+    else:
+        raise Exception('Freezer API version not supported')
+
+
+def get_client_class(api_version=None):
+    """Return Client Class.
+    Try to use provided api_version to import client class or
+    Guess the api_version form env.
+    Returns freezerclient.v{x}.client.Client
+    :return: class
+    """
+    if not api_version:
+        api_version = check_api_version()
+    api_string = 'freezerclient.v{0}.client.Client'.format(api_version)
+    return importutils.import_class(api_string)
+
+
+def get_client_instance(kwargs={}, opts=None):
+    """Get Freezerclient Instance.
+    We will the provided auth dict to instantiate a client instance
+    Returns freezerclient.v{x}.client.Client Object
+    :return: Object
+    """
+    return get_client_class()(opts=opts, **kwargs)
