@@ -2,7 +2,8 @@
 Welcome to Freezer's client documentation!
 ==========================================
 
-Contents:
+Contents
+--------
 
 .. toctree::
    :maxdepth: 2
@@ -10,10 +11,10 @@ Contents:
    cli/index
 
 
-.. rubric:: Indices and tables
+Indices and tables
+------------------
 
 * :ref:`genindex`
-* :ref:`modindex`
 * :ref:`search`
 
 
