@@ -14,9 +14,7 @@
 
 import socket
 
-from keystoneauth1.identity import v2
-from keystoneauth1.identity import v3
-from keystoneauth1 import session as ksa_session
+from keystoneauth1 import loading as kaloading
 
 from freezerclient import utils
 from freezerclient.v2.managers import actions
@@ -26,58 +24,6 @@ from freezerclient.v2.managers import jobs
 from freezerclient.v2.managers import sessions
 
 FREEZER_SERVICE_TYPE = 'backup'
-
-
-def guess_auth_version(opts):
-    """Guess keystone version to connect to"""
-    if opts.os_identity_api_version == '3':
-        return '3'
-    elif opts.os_identity_api_version == '2.0':
-        return '2.0'
-    elif opts.os_auth_url.endswith('v3'):
-        return '3'
-    elif opts.os_auth_url.endswith('v2.0'):
-        return '2.0'
-    raise Exception('Please provide valid keystone auth url with valid'
-                    ' keystone api version to use')
-
-
-def get_auth_plugin(opts):
-    """Create the right keystone connection depending on the version
-    for the api, if username/password and token are provided, username and
-    password takes precedence.
-    """
-    auth_version = guess_auth_version(opts)
-    if opts.os_username:
-        if auth_version == '3':
-            return v3.Password(auth_url=opts.os_auth_url,
-                               username=opts.os_username,
-                               password=opts.os_password,
-                               project_name=opts.os_project_name,
-                               user_domain_name=opts.os_user_domain_name,
-                               user_domain_id=opts.os_user_domain_id,
-                               project_domain_name=opts.os_project_domain_name,
-                               project_domain_id=opts.os_project_domain_id,
-                               project_id=opts.os_project_id)
-        elif auth_version == '2.0':
-            return v2.Password(auth_url=opts.os_auth_url,
-                               username=opts.os_username,
-                               password=opts.os_password,
-                               tenant_name=opts.os_tenant_name)
-    elif opts.os_token:
-        if auth_version == '3':
-            return v3.Token(auth_url=opts.os_auth_url,
-                            token=opts.os_token,
-                            project_name=opts.os_project_name,
-                            project_domain_name=opts.os_project_domain_name,
-                            project_domain_id=opts.os_project_domain_id,
-                            project_id=opts.os_project_id)
-        elif auth_version == '2.0':
-            return v2.Token(auth_url=opts.os_auth_url,
-                            token=opts.os_token,
-                            tenant_name=opts.os_tenant_name)
-    raise Exception('Unable to determine correct auth method, please provide'
-                    ' either username or token')
 
 
 class Client(object):
@@ -164,11 +110,34 @@ class Client(object):
     def session(self):
         if self._session:
             return self._session
-        auth_plugin = get_auth_plugin(self.opts)
-        return ksa_session.Session(auth=auth_plugin,
-                                   verify=(self.cacert or
-                                           not self.opts.insecure),
-                                   cert=self.cert)
+        auth_type = 'password'
+        auth_kwargs = {
+            'auth_url': self.opts.os_auth_url,
+            'project_id': self.opts.os_project_id,
+            'tenant_name': self.opts.os_tenant_name,
+            'project_name': self.opts.os_project_name,
+            'user_domain_id': self.opts.os_user_domain_id,
+            'user_domain_name': self.opts.os_user_domain_name,
+            'project_domain_id': self.opts.os_project_domain_id,
+            'project_domain_name': self.opts.os_project_domain_name,
+        }
+        if self.opts.os_username and self.opts.os_password:
+            auth_kwargs.update({
+                'username': self.opts.os_username,
+                'password': self.opts.os_password,
+            })
+        elif self.opts.os_token:
+            auth_type = 'token'
+            auth_kwargs.update({
+                'token': self.opts.os_token,
+            })
+        loader = kaloading.get_plugin_loader(auth_type)
+        auth_plugin = loader.load_from_options(**auth_kwargs)
+        # Let keystoneauth do the necessary parameter conversions
+        session = kaloading.session.Session().load_from_options(
+            auth=auth_plugin, insecure=self.opts.insecure, cacert=self.cacert,
+            cert=self.cert)
+        return session
 
     @utils.CachedProperty
     def endpoint(self):
