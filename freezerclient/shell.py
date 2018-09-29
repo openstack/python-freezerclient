@@ -175,24 +175,10 @@ class FreezerShell(app.App):
         )
 
         parser.add_argument(
-            '--os-tenant-id',
-            dest='os_tenant_id',
-            default=os.environ.get('OS_TENANT_ID'),
-            help='Tenant to request authorization on'
-        )
-
-        parser.add_argument(
             '--os-project-id',
             dest='os_project_id',
             default=os.environ.get('OS_PROJECT_ID'),
             help='Project to request authorization on'
-        )
-
-        parser.add_argument(
-            '--os-tenant-name',
-            dest='os_tenant_name',
-            default=os.environ.get('OS_TENANT_NAME'),
-            help='Tenant to request authorization on'
         )
 
         parser.add_argument(
@@ -250,7 +236,7 @@ class FreezerShell(app.App):
             'version': self.options.os_identity_api_version,
             'username': self.options.os_username,
             'password': self.options.os_password,
-            'tenant_name': self.options.os_tenant_name,
+            'tenant_name': self.options.os_project_name,
             'auth_url': self.options.os_auth_url,
             'endpoint': self.options.os_backup_url,
             'endpoint_type': self.options.os_endpoint_type,
