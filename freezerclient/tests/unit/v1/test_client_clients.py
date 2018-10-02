@@ -17,7 +17,7 @@ import unittest
 import mock
 
 from freezerclient import exceptions
-from freezerclient.v1.client import clients
+from freezerclient.v1.managers import clients
 
 
 class TestClientManager(unittest.TestCase):

@@ -18,7 +18,7 @@ import unittest
 import mock
 
 from freezerclient import exceptions
-from freezerclient.v1.client import sessions
+from freezerclient.v1.managers import sessions
 
 
 class TestSessionManager(unittest.TestCase):

@@ -18,7 +18,7 @@ import unittest
 import mock
 
 from freezerclient import exceptions
-from freezerclient.v1.client import jobs
+from freezerclient.v1.managers import jobs
 
 
 class TestJobManager(unittest.TestCase):
