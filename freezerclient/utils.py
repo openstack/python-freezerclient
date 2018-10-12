@@ -143,13 +143,17 @@ def prepare_search(search_term):
     return {}
 
 
-def check_api_version():
+def check_api_version(api_version=None):
     """Check freezer version API to use
     1: not multi-tenant, useful for infrastructure
     2: multi-tenant, useful for backup as a service
     :return: str
     """
-    freezer_api_version = os.environ.get('OS_BACKUP_API_VERSION', '2')
+    if not api_version:
+        freezer_api_version = os.environ.get('OS_BACKUP_API_VERSION', '2')
+    else:
+        freezer_api_version = api_version
+
     if freezer_api_version == '1':
         return '1'
     elif freezer_api_version == '2':
@@ -165,16 +169,15 @@ def get_client_class(api_version=None):
     Returns freezerclient.v{x}.client.Client
     :return: class
     """
-    if not api_version:
-        api_version = check_api_version()
-    api_string = 'freezerclient.v{0}.client.Client'.format(api_version)
+    freezer_api_version = check_api_version(api_version)
+    api_string = 'freezerclient.v{0}.client.Client'.format(freezer_api_version)
     return importutils.import_class(api_string)
 
 
-def get_client_instance(kwargs={}, opts=None):
+def get_client_instance(kwargs={}, opts=None, api_version=None):
     """Get Freezerclient Instance.
     We will the provided auth dict to instantiate a client instance
     Returns freezerclient.v{x}.client.Client Object
     :return: Object
     """
-    return get_client_class()(opts=opts, **kwargs)
+    return get_client_class(api_version)(opts=opts, **kwargs)

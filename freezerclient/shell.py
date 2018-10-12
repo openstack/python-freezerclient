@@ -99,6 +99,13 @@ class FreezerShell(app.App):
         )
 
         parser.add_argument(
+            '--os-backup-api-version',
+            dest='os_backup_api_version',
+            default=os.environ.get('OS_BACKUP_API_VERSION', '2'),
+            help='Backup API version: 1 or 2'
+        )
+
+        parser.add_argument(
             '--os-backup-url',
             dest='os_backup_url',
             default=os.environ.get('OS_BACKUP_URL'),
@@ -250,7 +257,8 @@ class FreezerShell(app.App):
             'cacert': self.options.os_cacert,
             'insecure': self.options.insecure
         }
-        return utils.get_client_instance(opts)
+        return utils.get_client_instance(
+            opts, api_version=self.options.os_backup_api_version)
 
 
 def main(argv=sys.argv[1:]):
