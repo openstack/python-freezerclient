@@ -8,7 +8,10 @@ Contents
 .. toctree::
    :maxdepth: 2
 
+   user/index
+   reference/index
    cli/index
+   contributor/index
 
 
 Indices and tables
