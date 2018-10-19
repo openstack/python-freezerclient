@@ -117,3 +117,19 @@ class BackupDelete(command.Command):
     def take_action(self, parsed_args):
         self.app.client.backups.delete(parsed_args.backup_uuid)
         logging.info('Backup {0} deleted'.format(parsed_args.backup_uuid))
+
+
+class BackupCreate(command.Command):
+    """Create an backup from a file"""
+    def get_parser(self, prog_name):
+        parser = super(BackupCreate, self).get_parser(prog_name)
+        parser.add_argument('--file',
+                            dest='file',
+                            required=True,
+                            help='Path to json file with the backup')
+        return parser
+
+    def take_action(self, parsed_args):
+        backup = utils.doc_from_json_file(parsed_args.file)
+        backup_id = self.app.client.backups.create(backup)
+        logging.info('Backup {0} created'.format(backup_id))

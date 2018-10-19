@@ -59,6 +59,7 @@ class FreezerCommandManager(commandmanager.CommandManager):
         'backup-list': backups.BackupList,
         'backup-show': backups.BackupShow,
         'backup-delete': backups.BackupDelete,
+        'backup-create': backups.BackupCreate,
         'session-list': sessions.SessionList,
         'session-show': sessions.SessionShow,
         'session-create': sessions.SessionCreate,
