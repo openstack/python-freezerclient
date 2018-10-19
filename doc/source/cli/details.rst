@@ -25,7 +25,6 @@ freezer usage
                   [--os-auth-url OS_AUTH_URL] [--os-backup-url OS_BACKUP_URL]
                   [--os-backup-api-version OS_BACKUP_API_VERSION]
                   [--os-endpoint-type OS_ENDPOINT_TYPE]
-                  [--os-identity-api-version OS_IDENTITY_API_VERSION]
                   [--os-password OS_PASSWORD] [--os-username OS_USERNAME]
                   [--os-token OS_TOKEN]
                   [--os-project-domain-name OS_PROJECT_DOMAIN_NAME]
@@ -73,9 +72,6 @@ freezer optional arguments
   Endpoint type to select. Valid endpoint types:
   "public" or "publicURL", "internal" or "internalURL",
   "admin" or "adminURL"
-
-``--os-identity-api-version OS_IDENTITY_API_VERSION``
-  Identity API version: 2.0 or 3
 
 ``--os-password OS_PASSWORD``
   Password used for authentication with the OpenStack

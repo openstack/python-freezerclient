@@ -123,13 +123,6 @@ class FreezerShell(app.App):
         )
 
         parser.add_argument(
-            '--os-identity-api-version',
-            dest='os_identity_api_version',
-            default=os.environ.get('OS_IDENTITY_API_VERSION'),
-            help='Identity API version: 2.0 or 3'
-        )
-
-        parser.add_argument(
             '--os-password',
             dest='os_password',
             default=os.environ.get('OS_PASSWORD'),
@@ -241,7 +234,6 @@ class FreezerShell(app.App):
         """
         opts = {
             'token': self.options.os_token,
-            'version': self.options.os_identity_api_version,
             'username': self.options.os_username,
             'password': self.options.os_password,
             'tenant_name': self.options.os_project_name,

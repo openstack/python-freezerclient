@@ -30,7 +30,7 @@ class Client(object):
     """Client for the OpenStack Disaster Recovery v1 API.
     """
 
-    def __init__(self, version='3', token=None, username=None, password=None,
+    def __init__(self, token=None, username=None, password=None,
                  tenant_name=None, auth_url=None, session=None, endpoint=None,
                  endpoint_type=None, opts=None, project_name=None,
                  user_domain_name=None, user_domain_id=None,
@@ -38,7 +38,6 @@ class Client(object):
                  cert=None, cacert=None, insecure=False, project_id=None):
         """
         Initialize a new client for the Disaster Recovery v1 API.
-        :param version: keystone version to use
         :param token: keystone token
         :param username: openstack username
         :param password: openstack password
@@ -82,8 +81,6 @@ class Client(object):
             self.opts.os_user_domain_id = user_domain_id or None
             self.opts.os_project_domain_name = project_domain_name or None
             self.opts.os_project_domain_id = project_domain_id or None
-            self.opts.auth_version = version
-            self.opts.os_identity_api_version = version
             self.opts.os_cacert = cacert or None
             self.opts.insecure = insecure
             self.opts.cert = cert
