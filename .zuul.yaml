@@ -10,7 +10,10 @@
       jobs:
         - openstack-tox-lower-constraints
         - openstack-tox-pylint
+        - freezer-tempest-client
+
     gate:
       jobs:
         - openstack-tox-lower-constraints
         - openstack-tox-pylint
+        - freezer-tempest-client 
