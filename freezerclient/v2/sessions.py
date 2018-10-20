@@ -44,14 +44,30 @@ class SessionShow(show.ShowOne):
             'Session ID',
             'Description',
             'Status',
-            'Jobs'
+            'Result',
+            'Jobs',
+            'Hold off',
+            'Schedule',
+            'Last start',
+            'Time start',
+            'Time end',
+            'Project id',
+            'User id',
         )
 
         data = (
             session.get('session_id'),
             session.get('description'),
+            session.get('result'),
             session.get('status'),
-            pprint.pformat(session.get('jobs'))
+            pprint.pformat(session.get('jobs')),
+            session.get('hold_off'),
+            pprint.pformat(session.get('schedule')),
+            session.get('last_start'),
+            session.get('time_start'),
+            session.get('time_end'),
+            session.get('project_id'),
+            session.get('user_id'),
         )
         return column, data
 
@@ -93,12 +109,13 @@ class SessionList(lister.Lister):
         # Print empty table if no sessions found
         if not sessions:
             sessions = [{}]
-
-        columns = ('Session ID', 'Description', 'Status', '# Jobs')
+        columns = ('Session ID', 'Description', 'Status',
+                   'Result', '# Jobs')
         data = ((
             session.get('session_id', ''),
             session.get('description', ''),
             session.get('status', ''),
+            session.get('result', ''),
             len(session.get('jobs', [])) if session.get(
                 'session_id') else '',
         ) for session in sessions)
