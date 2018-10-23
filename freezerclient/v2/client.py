@@ -111,10 +111,7 @@ class Client(object):
         auth_kwargs = {
             'auth_url': self.opts.os_auth_url,
             'project_id': self.opts.os_project_id,
-            'tenant_name': self.opts.os_tenant_name,
             'project_name': self.opts.os_project_name,
-            'user_domain_id': self.opts.os_user_domain_id,
-            'user_domain_name': self.opts.os_user_domain_name,
             'project_domain_id': self.opts.os_project_domain_id,
             'project_domain_name': self.opts.os_project_domain_name,
         }
@@ -122,6 +119,9 @@ class Client(object):
             auth_kwargs.update({
                 'username': self.opts.os_username,
                 'password': self.opts.os_password,
+                'tenant_name': self.opts.os_tenant_name,
+                'user_domain_id': self.opts.os_user_domain_id,
+                'user_domain_name': self.opts.os_user_domain_name,
             })
         elif self.opts.os_token:
             auth_type = 'token'

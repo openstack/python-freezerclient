@@ -17,7 +17,9 @@ import os
 
 
 def Client(version=None, endpoint=None, username=None, password=None,
-           project_name=None, auth_url=None, **kwargs):
+           project_name=None, auth_url=None, project_id=None, token=None,
+           cacert=None, project_domain_name=None, user_domain_id=None,
+           user_domain_name=None, **kwargs):
     """Initialize client object based on given version.
 
     HOW-TO:
@@ -25,11 +27,10 @@ def Client(version=None, endpoint=None, username=None, password=None,
     credentials::
 
         >>> from freezerclient import client
-        >>> freezer = client.Client(VERSION, ENDPOINT, USERNAME, PASSWORD,
-        ...                      PROJECT_NAME, AUTH_URL)
+        >>> freezer = client.Client('2',username='admin',password='stack')
 
-    Here ``VERSION`` is freezer API Version, you can use ``1`` or ``2``,
-    default is API v2.
+    Here ``VERSION`` is freezer API Version, you can use ``1``(v1) or ``2``
+    (v2),default is API v2.
 
     Alternatively, you can create a client instance using the keystoneauth
     session API. See "The freezerclient Python API" page at
@@ -60,11 +61,33 @@ def Client(version=None, endpoint=None, username=None, password=None,
     else:
         kwargs["auth_url"] = os.environ.get('OS_AUTH_URL')
 
-    kwargs["token"] = os.environ.get('OS_TOKEN')
-    kwargs["tenant_name"] = os.environ.get('OS_PROJECT_NAME')
+    if token:
+        kwargs["token"] = token
+    else:
+        kwargs["token"] = os.environ.get('OS_TOKEN')
+
+    kwargs["project_domain_name"] = os.environ.get('OS_PROJECT_DOMAIN_NAME')
+    if project_domain_name:
+        kwargs["project_domain_name"] = project_domain_name
+
+    if user_domain_name:
+        kwargs["user_domain_name"] = user_domain_name
+    else:
+        kwargs["user_domain_name"] = os.environ.get('OS_USER_DOMAIN_NAME')
+
+    if user_domain_id:
+        kwargs["user_domain_id"] = user_domain_id
+    else:
+        kwargs["user_domain_id"] = os.environ.get('OS_USER_DOMAIN_ID')
+
+    if project_id:
+        kwargs["project_id"] = project_id
+    else:
+        kwargs["project_id"] = os.environ.get('OS_PROJECT_ID')
+
+    kwargs["cacert"] = cacert or os.environ.get('OS_CACERT')
     kwargs["endpoint_type"] = os.environ.get('OS_ENDPOINT_TYPE') or 'public'
-    kwargs["project_domain_id"] = os.environ.get('OS_PROJECT_DOMAIN_ID')
-    kwargs["user_domain_id"] = os.environ.get('OS_USER_DOMAIN_ID')
+
     if not version:
         version = os.environ.get('OS_BACKUP_API_VERSION', '2')
 
