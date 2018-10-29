@@ -42,10 +42,16 @@ class BackupShow(show.ShowOne):
 
         column = (
             'Backup ID',
+            'Project ID',
+            'User ID',
+            'User name',
             'Metadata'
         )
         data = (
             backup.get('backup_uuid'),
+            backup.get('project_id'),
+            backup.get('user_id'),
+            backup.get('user_name'),
             pprint.pformat(backup.get('backup_metadata'))
         )
         return column, data
