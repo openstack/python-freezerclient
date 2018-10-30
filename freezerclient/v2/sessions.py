@@ -42,6 +42,7 @@ class SessionShow(show.ShowOne):
 
         column = (
             'Session ID',
+            'Session tag',
             'Description',
             'Status',
             'Result',
@@ -57,9 +58,10 @@ class SessionShow(show.ShowOne):
 
         data = (
             session.get('session_id'),
+            session.get('session_tag'),
             session.get('description'),
-            session.get('result'),
             session.get('status'),
+            session.get('result'),
             pprint.pformat(session.get('jobs')),
             session.get('hold_off'),
             pprint.pformat(session.get('schedule')),
