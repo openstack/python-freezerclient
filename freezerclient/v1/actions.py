@@ -46,7 +46,13 @@ class ActionShow(show.ShowOne):
             'Mode',
             'Path to Backup or Restore',
             'Storage',
-            'Snapshot'
+            'Snapshot',
+            'Container',
+            'Log_file',
+            'Remove older than',
+            'Max retries interval',
+            'Max retries',
+            'User ID'
         )
 
         data = (
@@ -57,6 +63,12 @@ class ActionShow(show.ShowOne):
             action.get('freezer_action', {}).get('path_to_backup', ''),
             action.get('freezer_action', {}).get('storage', 'swift'),
             action.get('freezer_action', {}).get('snapshot', 'False'),
+            action.get('freezer_action', {}).get('container', ''),
+            action.get('freezer_action', {}).get('log_file', ''),
+            action.get('freezer_action', {}).get('remove_older_than', '365'),
+            action.get('max_retries_interval', '6'),
+            action.get('max_retries', '5'),
+            action.get('user_id', ''),
         )
 
         return column, data
