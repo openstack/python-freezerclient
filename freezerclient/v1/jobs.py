@@ -50,6 +50,10 @@ class JobShow(show.ShowOne):
             'Start Date',
             'End Date',
             'Interval',
+            'Status',
+            'Result',
+            'Current pid',
+            'Event'
         )
         data = (
             job.get('job_id'),
@@ -61,6 +65,10 @@ class JobShow(show.ShowOne):
             job.get('job_schedule', {}).get('schedule_start_date', ''),
             job.get('job_schedule', {}).get('schedule_end_date', ''),
             job.get('job_schedule', {}).get('schedule_interval', ''),
+            job.get('job_schedule', {}).get('status', ''),
+            job.get('job_schedule', {}).get('result', ''),
+            job.get('job_schedule', {}).get('current_pid', ''),
+            job.get('job_schedule', {}).get('event', ''),
         )
         return column, data
 
