@@ -102,10 +102,11 @@ class SessionList(lister.Lister):
         return parser
 
     def take_action(self, parsed_args):
+        search = utils.prepare_search(parsed_args.search)
         sessions = self.app.client.sessions.list_all(
             limit=parsed_args.limit,
             offset=parsed_args.offset,
-            search=parsed_args.search
+            search=search
         )
 
         # Print empty table if no sessions found
