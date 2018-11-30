@@ -186,7 +186,24 @@ List all actions for your user
 ``--offset OFFSET``
 
 ``--search SEARCH``
-  Define a filter for the query
+  Define a filter for the query.
+
+  If the storage of freezer-api is a ``Sqlalchemy`` database, the search option
+  must be a list of {key, value}, and it can be converted to json,
+  otherwise, search option will not work, querying all records. as follows:
+     * '[{"max_retries": 10}]'
+     * '[{"max_retries": 10}, {"mode": "nova"}]'
+  ``Note``:
+     If all key-values of the list are found in this tuple, it will be
+     filtered in, otherwise filtered out.
+
+  If the storage of freezer-api is an ``elasticsearch`` database, the search
+  option can be the same as above, or it can be a string that it isn't
+  {key, value}. plsease reference elasticsearch https://www.elastic.co/guide/en/elasticsearch/reference/current/search.html
+  as follows:
+    * '[{"max_retries": 10}]'
+    * '[{"max_retries": 10}, {"mode": "nova"}]'
+    * '["5e37946b10dc42dbb6ca3338501da2c7"]'
 
 .. _freezer_action-show:
 
@@ -283,7 +300,7 @@ List all backups for your user
 ``--offset OFFSET``
 
 ``--search SEARCH``
-  Define a filter for the query
+  Define a filter for the query. See ``freezer action-list``
 
 .. _freezer_backup-show:
 
@@ -356,7 +373,7 @@ List of clients registered in the api
 ``--offset OFFSET``
 
 ``--search SEARCH``
-  Define a filter for the query
+  Define a filter for the query. See ``freezer action-list``
 
 .. _freezer_client-register:
 
@@ -516,7 +533,7 @@ List all the jobs for your user
 ``--offset OFFSET``
 
 ``--search SEARCH``
-  Define a filter for the query
+  Define a filter for the query. See ``freezer action-list``
 
 ``--client CLIENT_ID, -C``
   CLIENT_ID
@@ -701,7 +718,7 @@ List all the sessions for your user
 ``--offset OFFSET``
 
 ``--search SEARCH``
-  Define a filter for the query
+  Define a filter for the query. See ``freezer action-list``
 
 .. _freezer_session-remove-job:
 
