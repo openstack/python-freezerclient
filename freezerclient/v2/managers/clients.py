@@ -23,7 +23,7 @@ class ClientManager(object):
 
     def __init__(self, client, verify=True):
         self.client = client
-        self.endpoint = self.endpoint = '{0}/v2/{1}/clients/'.format(
+        self.endpoint = '{0}/v2/{1}/clients/'.format(
             self.client.endpoint, self.client.project_id)
         self.verify = verify
 
