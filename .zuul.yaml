@@ -1,19 +1,18 @@
 - project:
     templates:
+      - check-requirements
+      - openstack-lower-constraints-jobs
       - openstack-python-jobs
       - openstack-python35-jobs
       - openstack-python36-jobs
-      - check-requirements
       - publish-openstack-docs-pti
       - release-notes-jobs-python3
     check:
       jobs:
-        - openstack-tox-lower-constraints
         - openstack-tox-pylint
         - freezer-tempest-client
 
     gate:
       jobs:
-        - openstack-tox-lower-constraints
         - openstack-tox-pylint
         - freezer-tempest-client 
