@@ -13,10 +13,10 @@
 # limitations under the License.
 
 
-import json
 import logging
 import os
 
+from oslo_serialization import jsonutils as json
 from oslo_utils import importutils
 
 logging = logging.getLogger(__name__)

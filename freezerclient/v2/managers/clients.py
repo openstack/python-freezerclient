@@ -12,8 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import json
 import requests
+
+from oslo_serialization import jsonutils as json
 
 from freezerclient import exceptions
 from freezerclient import utils
