@@ -27,7 +27,7 @@ FREEZER_SERVICE_TYPE = 'backup'
 
 
 class Client(object):
-    """Client for the OpenStack Disaster Recovery v1 API.
+    """Client for the OpenStack Disaster Recovery v2 API.
     """
 
     def __init__(self, token=None, username=None, password=None,
@@ -37,7 +37,7 @@ class Client(object):
                  project_domain_name=None, project_domain_id=None,
                  cert=None, cacert=None, insecure=False, project_id=None):
         """
-        Initialize a new client for the Disaster Recovery v1 API.
+        Initialize a new client for the Disaster Recovery v2 API.
         :param token: keystone token
         :param username: openstack username
         :param password: openstack password

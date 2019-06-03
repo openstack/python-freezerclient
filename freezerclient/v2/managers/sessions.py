@@ -84,7 +84,7 @@ class SessionManager(object):
         return r.json()['version']
 
     def add_job(self, session_id, job_id):
-        # endpoint /v1/sessions/{sessions_id}/jobs/{job_id}
+        # endpoint /v2/sessions/{sessions_id}/jobs/{job_id}
         endpoint = '{0}{1}/jobs/{2}'.format(self.endpoint, session_id, job_id)
         r = requests.put(endpoint,
                          headers=self.headers, verify=self.verify)
@@ -93,7 +93,7 @@ class SessionManager(object):
         return
 
     def remove_job(self, session_id, job_id):
-        # endpoint /v1/sessions/{sessions_id}/jobs/{job_id}
+        # endpoint /v2/sessions/{sessions_id}/jobs/{job_id}
         endpoint = '{0}{1}/jobs/{2}'.format(self.endpoint, session_id, job_id)
         retry = 5
         r = ''
@@ -122,7 +122,7 @@ class SessionManager(object):
                  { result: string 'running' or 'error',
                   'session_tag': the new session_tag )
         """
-        # endpoint /v1/sessions/{sessions_id}/action
+        # endpoint /v2/sessions/{sessions_id}/action
         endpoint = '{0}{1}/action'.format(self.endpoint, session_id)
         doc = {"start": {
             "job_id": job_id,
@@ -147,7 +147,7 @@ class SessionManager(object):
         :param result:
         :return:
         """
-        # endpoint /v1/sessions/{sessions_id}/action
+        # endpoint /v2/sessions/{sessions_id}/action
         endpoint = '{0}{1}/action'.format(self.endpoint, session_id)
         doc = {"end": {
             "job_id": job_id,

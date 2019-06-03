@@ -96,7 +96,7 @@ class JobManager(object):
                     result: string 'success' or 'already started'
                  }
         """
-        # endpoint /v1/jobs/{job_id}/event
+        # endpoint /v2/jobs/{job_id}/event
         endpoint = '{0}{1}/event'.format(self.endpoint, job_id)
         doc = {"start": None}
         r = requests.post(endpoint,
@@ -117,7 +117,7 @@ class JobManager(object):
                     result: string 'success' or 'already stopped'
                  }
         """
-        # endpoint /v1/jobs/{job_id}/event
+        # endpoint /v2/jobs/{job_id}/event
         endpoint = '{0}{1}/event'.format(self.endpoint, job_id)
         doc = {"stop": None}
         r = requests.post(endpoint,
@@ -138,7 +138,7 @@ class JobManager(object):
                     result: string 'success' or 'already stopped'
                  }
         """
-        # endpoint /v1/jobs/{job_id}/event
+        # endpoint /v2/jobs/{job_id}/event
         endpoint = '{0}{1}/event'.format(self.endpoint, job_id)
         doc = {"abort": None}
         r = requests.post(endpoint,
