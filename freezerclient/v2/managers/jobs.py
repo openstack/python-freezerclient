@@ -93,7 +93,7 @@ class JobManager(object):
         :param job_id: the id of the job to start
         :return: the response obj:
                  {
-                    result: string 'success' or 'already started'
+                    result: string 'success' or 'start already requested'
                  }
         """
         # endpoint /v2/jobs/{job_id}/event
@@ -114,7 +114,7 @@ class JobManager(object):
         :param job_id: the id of the job to start
         :return: the response obj:
                  {
-                    result: string 'success' or 'already stopped'
+                    result: string 'success' or 'stop already requested'
                  }
         """
         # endpoint /v2/jobs/{job_id}/event
@@ -135,7 +135,7 @@ class JobManager(object):
         :param job_id: the id of the job to start
         :return: the response obj:
                  {
-                    result: string 'success' or 'already stopped'
+                    result: string 'success' or 'abort already requested'
                  }
         """
         # endpoint /v2/jobs/{job_id}/event
