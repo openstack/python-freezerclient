@@ -98,16 +98,20 @@ class BackupList(lister.Lister):
         if not backups:
             backups = [{}]
 
+        # sort by the time of backup task is created
+        backups_l = sorted(backups,
+                           key=lambda x: x.get('backup_metadata',
+                                               {}).get('time_stamp', ''))
+
         data = ((b.get('backup_id', ''),
                  b.get('backup_uuid', ''),
                  b.get('backup_metadata', {}).get('hostname', ''),
                  b.get('backup_metadata', {}).get('path_to_backup', ''),
                  datetime.datetime.fromtimestamp(
-                     int(b.get('backup_metadata', {}).get(
-                         'time_stamp', ''))) if b.get(
-                     'backup_metadata') else '',
+                 int(b.get('backup_metadata', {}).get('time_stamp', '')))
+                 if b.get('backup_metadata') else '',
                  b.get('backup_metadata', {}).get('curr_backup_level', '')
-                 ) for b in backups)
+                 ) for b in backups_l)
 
         return columns, data
 
