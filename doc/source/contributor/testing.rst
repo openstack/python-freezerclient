@@ -6,11 +6,8 @@ test targets that can be run to validate the code.
 ``tox -e pep8``
   Style guidelines enforcement.
 
-``tox -e py27``
-  Traditional unit testing (Python 2.7).
-
-``tox -e py35``
-  Traditional unit testing (Python 3.5).
+``tox -e py37``
+  Traditional unit testing (Python 3.7).
 
 ``tox -e cover``
   Generate a coverage report on unit testing.
