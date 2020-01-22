@@ -17,7 +17,7 @@ import re
 import sys
 
 import fixtures
-import six
+import io
 import testtools
 from testtools import matchers
 
@@ -58,8 +58,8 @@ class ShellTest(testtools.TestCase):
         clean_env = {}
         _old_env, os.environ = os.environ, clean_env.copy()
         try:
-            sys.stdout = six.moves.cStringIO()
-            sys.stderr = six.moves.cStringIO()
+            sys.stdout = io.StringIO()
+            sys.stderr = io.StringIO()
             _shell = openstack_shell.FreezerShell()
             _shell.run(argstr.split())
         except SystemExit:
