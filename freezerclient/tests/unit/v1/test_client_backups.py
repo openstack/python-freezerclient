@@ -13,8 +13,7 @@
 # limitations under the License.
 
 import unittest
-
-import mock
+from unittest import mock
 
 from freezerclient import exceptions
 from freezerclient.v1.managers import backups
