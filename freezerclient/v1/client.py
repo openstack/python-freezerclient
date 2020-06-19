@@ -31,7 +31,7 @@ class Client(object):
     """
 
     def __init__(self, token=None, username=None, password=None,
-                 tenant_name=None, auth_url=None, session=None, endpoint=None,
+                 auth_url=None, session=None, endpoint=None,
                  endpoint_type=None, opts=None, project_name=None,
                  user_domain_name=None, user_domain_id=None,
                  project_domain_name=None, project_domain_id=None,
@@ -41,7 +41,6 @@ class Client(object):
         :param token: keystone token
         :param username: openstack username
         :param password: openstack password
-        :param tenant_name: tenant
         :param auth_url: keystone-api endpoint
         :param session: keystone.Session
         :param endpoint: freezer-api endpoint
@@ -71,7 +70,6 @@ class Client(object):
             self.opts.os_token = token or None
             self.opts.os_username = username or None
             self.opts.os_password = password or None
-            self.opts.os_tenant_name = tenant_name or None
             self.opts.os_auth_url = auth_url or None
             self.opts.os_backup_url = endpoint or None
             self.opts.os_endpoint_type = endpoint_type or None
@@ -119,7 +117,6 @@ class Client(object):
             auth_kwargs.update({
                 'username': self.opts.os_username,
                 'password': self.opts.os_password,
-                'tenant_name': self.opts.os_tenant_name,
                 'user_domain_id': self.opts.os_user_domain_id,
                 'user_domain_name': self.opts.os_user_domain_name,
             })

@@ -40,7 +40,7 @@ class TestClientMock(unittest.TestCase):
         kwargs = {'token': 'alpha',
                   'username': 'bravo',
                   'password': 'charlie',
-                  'tenant_name': 'delta',
+                  'project_name': 'delta',
                   'auth_url': 'echo',
                   'endpoint': 'golf',
                   'session': mock_session}
@@ -49,7 +49,7 @@ class TestClientMock(unittest.TestCase):
         self.assertEqual('alpha', c.opts.os_token)
         self.assertEqual('bravo', c.opts.os_username)
         self.assertEqual('charlie', c.opts.os_password)
-        self.assertEqual('delta', c.opts.os_tenant_name)
+        self.assertEqual('delta', c.opts.os_project_name)
         self.assertEqual('echo', c.opts.os_auth_url)
         self.assertEqual(mock_session, c._session)
         self.assertEqual(mock_session, c.session)
@@ -63,7 +63,6 @@ class TestClientMock(unittest.TestCase):
         mock_ks_loader.return_value.load_from_options.return_value = 'auth'
         kwargs = {'auth_url': 'one',
                   'project_id': 'two',
-                  'tenant_name': 'three',
                   'project_name': 'four',
                   'user_domain_id': 'five',
                   'user_domain_name': 'six',
@@ -76,7 +75,6 @@ class TestClientMock(unittest.TestCase):
         self.assertIsInstance(c, client.Client)
         self.assertEqual('one', c.opts.os_auth_url)
         self.assertEqual('two', c.opts.os_project_id)
-        self.assertEqual('three', c.opts.os_tenant_name)
         self.assertEqual('four', c.opts.os_project_name)
         self.assertEqual('five', c.opts.os_user_domain_id)
         self.assertEqual('six', c.opts.os_user_domain_name)
@@ -94,7 +92,6 @@ class TestClientMock(unittest.TestCase):
         mock_ks_loader.return_value.load_from_options.return_value = 'auth'
         kwargs = {'auth_url': 'one',
                   'project_id': 'two',
-                  'tenant_name': 'three',
                   'project_name': 'four',
                   'user_domain_id': 'five',
                   'user_domain_name': 'six',
@@ -106,7 +103,6 @@ class TestClientMock(unittest.TestCase):
         self.assertIsInstance(c, client.Client)
         self.assertEqual('one', c.opts.os_auth_url)
         self.assertEqual('two', c.opts.os_project_id)
-        self.assertEqual('three', c.opts.os_tenant_name)
         self.assertEqual('four', c.opts.os_project_name)
         self.assertEqual('five', c.opts.os_user_domain_id)
         self.assertEqual('six', c.opts.os_user_domain_name)

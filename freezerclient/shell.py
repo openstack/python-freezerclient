@@ -236,7 +236,6 @@ class FreezerShell(app.App):
             'token': self.options.os_token,
             'username': self.options.os_username,
             'password': self.options.os_password,
-            'tenant_name': self.options.os_project_name,
             'auth_url': self.options.os_auth_url,
             'endpoint': self.options.os_backup_url,
             'endpoint_type': self.options.os_endpoint_type,
