@@ -158,14 +158,14 @@ class FreezerShell(app.App):
             dest='os_project_domain_id',
             default=os.environ.get('OS_PROJECT_DOMAIN_ID'),
             help='OpenStack project domain ID. '
-                 'Defaults to env[OS_PROJECT_ID].'
+                 'Defaults to env[OS_PROJECT_DOMAIN_ID].'
         )
 
         parser.add_argument(
             '--os-project-name',
             dest='os_project_name',
             default=os.environ.get('OS_PROJECT_NAME'),
-            help='Project name to scope to'
+            help='Project name (tenant name)'
         )
 
         parser.add_argument(
