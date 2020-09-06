@@ -3,7 +3,7 @@ astroid==1.6.5
 Babel==2.3.4
 cliff==2.8.0
 cmd2==0.8.0
-coverage==4.0
+coverage==4.5.1
 debtcollector==1.2.0
 docutils==0.11
 dulwich==0.15.0
@@ -15,7 +15,7 @@ Jinja2==2.10
 keystoneauth1==3.4.0
 linecache2==1.0.0
 logilab-common==1.4.1
-MarkupSafe==1.0
+MarkupSafe==1.1.1
 monotonic==0.6
 netaddr==0.7.18
 netifaces==0.10.4
@@ -31,7 +31,7 @@ pyperclip==1.5.27
 python-mimeparse==1.6.0
 python-subunit==1.0.0
 pytz==2013.6
-PyYAML==3.12
+PyYAML==3.13
 requests==2.14.2
 setuptools==21.0.0
 snowballstemmer==1.2.1
