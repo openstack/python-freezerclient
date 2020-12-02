@@ -19,7 +19,7 @@ import os
 def Client(version=None, endpoint=None, username=None, password=None,
            project_name=None, auth_url=None, project_id=None, token=None,
            cacert=None, project_domain_name=None, user_domain_id=None,
-           user_domain_name=None, **kwargs):
+           user_domain_name=None, project_domain_id=None, **kwargs):
     """Initialize client object based on given version.
 
     HOW-TO:
@@ -69,6 +69,11 @@ def Client(version=None, endpoint=None, username=None, password=None,
     kwargs["project_domain_name"] = os.environ.get('OS_PROJECT_DOMAIN_NAME')
     if project_domain_name:
         kwargs["project_domain_name"] = project_domain_name
+
+    if project_domain_id:
+        kwargs["project_domain_id"] = project_domain_id
+    else:
+        kwargs["project_domain_id"] = os.environ.get('OS_PROJECT_DOMAIN_ID')
 
     if user_domain_name:
         kwargs["user_domain_name"] = user_domain_name
