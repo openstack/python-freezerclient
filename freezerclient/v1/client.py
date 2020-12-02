@@ -32,7 +32,7 @@ class Client(object):
 
     def __init__(self, token=None, username=None, password=None,
                  auth_url=None, session=None, endpoint=None,
-                 endpoint_type=None, opts=None, project_name=None,
+                 endpoint_type=None, project_name=None,
                  user_domain_name=None, user_domain_id=None,
                  project_domain_name=None, project_domain_id=None,
                  cert=None, cacert=None, insecure=False, project_id=None):
@@ -45,7 +45,6 @@ class Client(object):
         :param session: keystone.Session
         :param endpoint: freezer-api endpoint
         :param endpoint_type: type of endpoint
-        :param opts: a namespace to store all keystone data
         :param project_name: only for version 3
         :param user_domain_name: only for version 3
         :param user_domain_id: only for version 3
@@ -65,25 +64,22 @@ class Client(object):
 
         self.project_id = project_id
 
-        if opts is None:
-            self.opts = utils.Namespace({})
-            self.opts.os_token = token or None
-            self.opts.os_username = username or None
-            self.opts.os_password = password or None
-            self.opts.os_auth_url = auth_url or None
-            self.opts.os_backup_url = endpoint or None
-            self.opts.os_endpoint_type = endpoint_type or None
-            self.opts.os_project_name = project_name or None
-            self.opts.os_project_id = project_id or None
-            self.opts.os_user_domain_name = user_domain_name or None
-            self.opts.os_user_domain_id = user_domain_id or None
-            self.opts.os_project_domain_name = project_domain_name or None
-            self.opts.os_project_domain_id = project_domain_id or None
-            self.opts.os_cacert = cacert or None
-            self.opts.insecure = insecure
-            self.opts.cert = cert
-        else:
-            self.opts = opts
+        self.opts = utils.Namespace({})
+        self.opts.os_token = token or None
+        self.opts.os_username = username or None
+        self.opts.os_password = password or None
+        self.opts.os_auth_url = auth_url or None
+        self.opts.os_backup_url = endpoint or None
+        self.opts.os_endpoint_type = endpoint_type or None
+        self.opts.os_project_name = project_name or None
+        self.opts.os_project_id = project_id or None
+        self.opts.os_user_domain_name = user_domain_name or None
+        self.opts.os_user_domain_id = user_domain_id or None
+        self.opts.os_project_domain_name = project_domain_name or None
+        self.opts.os_project_domain_id = project_domain_id or None
+        self.opts.os_cacert = cacert or None
+        self.opts.insecure = insecure
+        self.opts.cert = cert
 
         self.cert = cert
         self.cacert = cacert or self.opts.os_cacert
