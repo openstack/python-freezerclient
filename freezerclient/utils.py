@@ -174,10 +174,10 @@ def get_client_class(api_version=None):
     return importutils.import_class(api_string)
 
 
-def get_client_instance(kwargs={}, opts=None, api_version=None):
+def get_client_instance(opts={}, api_version=None):
     """Get Freezerclient Instance.
     We will the provided auth dict to instantiate a client instance
     Returns freezerclient.v{x}.client.Client Object
     :return: Object
     """
-    return get_client_class(api_version)(opts=opts, **kwargs)
+    return get_client_class(api_version)(**opts)
