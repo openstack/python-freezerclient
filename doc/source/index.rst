@@ -11,8 +11,16 @@ Contents
    user/index
    reference/index
    cli/index
-   contributor/index
 
+For Contributors
+================
+
+* If you are a new contributor to python-freezerclient please refer: :doc:`contributor/contributing`
+
+  .. toctree::
+     :hidden:
+
+     contributor/contributing
 
 Indices and tables
 ------------------
