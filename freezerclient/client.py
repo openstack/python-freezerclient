@@ -13,13 +13,18 @@
 # limitations under the License.
 
 from freezerclient import utils
+from typing import Any
+
 import os
 
 
-def Client(version=None, endpoint=None, username=None, password=None,
-           project_name=None, auth_url=None, project_id=None, token=None,
-           cacert=None, project_domain_name=None, user_domain_id=None,
-           user_domain_name=None, project_domain_id=None, **kwargs):
+def Client(version: str = None, endpoint: str = None, username: str = None,
+           password: str = None, project_name: str = None,
+           auth_url: str = None,
+           project_id: str = None, token: str = None, cacert: str = None,
+           project_domain_name: str = None, user_domain_id: str = None,
+           user_domain_name: str = None, project_domain_id: str = None,
+           **kwargs) -> Any:
     """Initialize client object based on given version.
 
     HOW-TO:
