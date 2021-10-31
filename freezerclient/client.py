@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from freezerclient import utils
-from typing import Any
+# from typing import Any
 
 import os
 
@@ -24,7 +24,7 @@ def Client(version: str = None, endpoint: str = None, username: str = None,
            project_id: str = None, token: str = None, cacert: str = None,
            project_domain_name: str = None, user_domain_id: str = None,
            user_domain_name: str = None, project_domain_id: str = None,
-           **kwargs) -> Any:
+           **kwargs) -> str:
     """Initialize client object based on given version.
 
     HOW-TO:
@@ -34,11 +34,7 @@ def Client(version: str = None, endpoint: str = None, username: str = None,
         >>> from freezerclient import client
         >>> freezer = client.Client('2',username='admin',password='stack')
 
-    Here ``VERSION`` is freezer API Version, you can use ``1``(v1) or ``2``
-    (v2),default is API v2.
-
-    Alternatively, you can create a client instance using the keystoneauth
-    session API. See "The freezerclient Python API" page at
+    Here ``VERSION`` is freezer API VersrPython API" page at
     python-freezerclient's doc.
     """
     if endpoint:
