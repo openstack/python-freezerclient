@@ -42,7 +42,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-copyright = u'2016, Freezer developers'
+copyright = '2016, Freezer developers'
 
 openstackdocs_repo_name = 'openstack/python-freezerclient'
 openstackdocs_bug_project = 'freezer'
@@ -186,8 +186,8 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
   ('index', 'PythonFreezerClient.tex',
-   u'Freezer Client Release Notes Documentation',
-   u'Freezer developers', 'manual'),
+   'Freezer Client Release Notes Documentation',
+   'Freezer developers', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -217,8 +217,8 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     ('index', 'pythonfreezerclient',
-     u'Freezer Client Release Notes Documentation',
-     [u'Freezer developers'], 1)
+     'Freezer Client Release Notes Documentation',
+     ['Freezer developers'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -232,8 +232,8 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
   ('index', 'PythonFreezerClient',
-   u'Freezer Client Release Notes Documentation',
-   u'Freezer developers', 'PythonFreezerClient',
+   'Freezer Client Release Notes Documentation',
+   'Freezer developers', 'PythonFreezerClient',
    'One line description of project.', 'Miscellaneous'),
 ]
 

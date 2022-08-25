@@ -43,7 +43,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-copyright = u'2016, OpenStack'
+copyright = '2016, OpenStack'
 
 # openstackdocstheme options
 openstackdocs_repo_name = 'openstack/python-freezerclient'
@@ -187,8 +187,8 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  ('index', 'Freezer.tex', u'Freezer Documentation',
-   u'OpenStack', 'manual'),
+  ('index', 'Freezer.tex', 'Freezer Documentation',
+   'OpenStack', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -217,8 +217,8 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'freezer', u'Freezer Documentation',
-     [u'OpenStack'], 1)
+    ('index', 'freezer', 'Freezer Documentation',
+     ['OpenStack'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -231,8 +231,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'Freezer', u'Freezer Documentation',
-   u'OpenStack', 'Freezer', 'One line description of project.',
+  ('index', 'Freezer', 'Freezer Documentation',
+   'OpenStack', 'Freezer', 'One line description of project.',
    'Miscellaneous'),
 ]
 
