@@ -35,7 +35,8 @@ class Client(object):
                  endpoint_type=None, project_name=None,
                  user_domain_name=None, user_domain_id=None,
                  project_domain_name=None, project_domain_id=None,
-                 cert=None, cacert=None, insecure=False, project_id=None):
+                 cert=None, cacert=None, insecure=False, project_id=None,
+                 opts=None):
         """
         Initialize a new client for the Disaster Recovery v1 API.
         :param token: keystone token
@@ -59,27 +60,31 @@ class Client(object):
                        defaults to True)
         :param cert: Path to cert
         :param project_id: only for version 3
+        :param opts: a namespace to store all keystone data
         :return: freezerclient.Client
         """
 
         self.project_id = project_id
 
-        self.opts = utils.Namespace({})
-        self.opts.os_token = token or None
-        self.opts.os_username = username or None
-        self.opts.os_password = password or None
-        self.opts.os_auth_url = auth_url or None
-        self.opts.os_backup_url = endpoint or None
-        self.opts.os_endpoint_type = endpoint_type or None
-        self.opts.os_project_name = project_name or None
-        self.opts.os_project_id = project_id or None
-        self.opts.os_user_domain_name = user_domain_name or None
-        self.opts.os_user_domain_id = user_domain_id or None
-        self.opts.os_project_domain_name = project_domain_name or None
-        self.opts.os_project_domain_id = project_domain_id or None
-        self.opts.os_cacert = cacert or None
-        self.opts.insecure = insecure
-        self.opts.cert = cert
+        if opts is None:
+            self.opts = utils.Namespace({})
+            self.opts.os_token = token or None
+            self.opts.os_username = username or None
+            self.opts.os_password = password or None
+            self.opts.os_auth_url = auth_url or None
+            self.opts.os_backup_url = endpoint or None
+            self.opts.os_endpoint_type = endpoint_type or None
+            self.opts.os_project_name = project_name or None
+            self.opts.os_project_id = project_id or None
+            self.opts.os_user_domain_name = user_domain_name or None
+            self.opts.os_user_domain_id = user_domain_id or None
+            self.opts.os_project_domain_name = project_domain_name or None
+            self.opts.os_project_domain_id = project_domain_id or None
+            self.opts.os_cacert = cacert or None
+            self.opts.insecure = insecure
+            self.opts.cert = cert
+        else:
+            self.opts = opts
 
         self.cert = cert
         self.cacert = cacert or self.opts.os_cacert
