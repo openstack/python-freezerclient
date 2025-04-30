@@ -2,6 +2,10 @@
 Python bindings to the OpenStack Backup/Restore API (Freezer)
 =============================================================
 
+.. image:: https://governance.openstack.org/tc/badges/python-freezerclient.svg
+
+.. Change things from this point on
+
 .. image:: https://img.shields.io/pypi/v/python-freezerclient.svg
     :target: https://pypi.org/project/python-freezerclient/
     :alt: Latest Version
