@@ -105,6 +105,13 @@ class JobList(lister.Lister):
             default='',
             help='Get jobs for a specific client',
         )
+
+        parser.add_argument(
+            '--all-projects',
+            dest='all_projects',
+            action='store_true',
+            help='Get jobs for all projects',
+        )
         return parser
 
     def take_action(self, parsed_args):
@@ -116,13 +123,15 @@ class JobList(lister.Lister):
                 limit=parsed_args.limit,
                 offset=parsed_args.offset,
                 search=search,
-                client_id=parsed_args.client_id
+                client_id=parsed_args.client_id,
+                all_projects=parsed_args.all_projects,
             )
         else:
             jobs = self.app.client.jobs.list_all(
                 limit=parsed_args.limit,
                 offset=parsed_args.offset,
-                search=search
+                search=search,
+                all_projects=parsed_args.all_projects,
             )
 
         columns = ('Job ID', 'Description', '# Actions', 'Result', 'Status',

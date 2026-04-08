@@ -51,21 +51,26 @@ class JobManager(object):
         if r.status_code != 204:
             raise exceptions.ApiClientException(r)
 
-    def list_all(self, limit=10, offset=0, search=None):
+    def list_all(self, limit=10, offset=0, search=None, all_projects=False):
         data = json.dumps(search) if search else None
-        query = {'limit': int(limit), 'offset': int(offset)}
+        query = {
+            'limit': int(limit),
+            'offset': int(offset),
+            'all_projects': all_projects,
+        }
         r = requests.get(self.endpoint, headers=self.headers,
                          params=query, data=data, verify=self.verify)
         if r.status_code != 200:
             raise exceptions.ApiClientException(r)
         return r.json()['jobs']
 
-    def list(self, limit=10, offset=0, search={}, client_id=None):
+    def list(self, limit=10, offset=0, search={}, client_id=None,
+             all_projects=False):
         client_id = client_id or self.client.client_id
         new_search = search.copy()
         new_search['match'] = search.get('match', [])
         new_search['match'].append({'client_id': client_id})
-        return self.list_all(limit, offset, new_search)
+        return self.list_all(limit, offset, new_search, all_projects)
 
     def get(self, job_id):
         endpoint = self.endpoint + job_id

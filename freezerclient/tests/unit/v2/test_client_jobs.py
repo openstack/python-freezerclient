@@ -18,6 +18,7 @@ from unittest import mock
 from oslo_serialization import jsonutils as json
 
 from freezerclient import exceptions
+from freezerclient.v2 import jobs as jobs_cmd
 from freezerclient.v2.managers import jobs
 
 
@@ -143,6 +144,40 @@ class TestJobManager(unittest.TestCase):
         self.mock_response.json.return_value = {'clients': job_list}
         mock_requests.get.return_value = self.mock_response
         self.assertRaises(exceptions.ApiClientException, self.job_manager.list)
+
+    @mock.patch('freezerclient.v2.managers.jobs.requests')
+    def test_list_all_all_projects(self, mock_requests):
+        self.mock_response.status_code = 200
+        job_list = [{'job_id_0': 'bomboloid'}, {'job_id_1': 'asdfasdf'}]
+        self.mock_response.json.return_value = {'jobs': job_list}
+        mock_requests.get.return_value = self.mock_response
+        retval = self.job_manager.list_all(all_projects=True)
+        self.assertEqual(job_list, retval)
+        mock_requests.get.assert_called_with(
+            self.job_manager.endpoint,
+            headers=self.headers,
+            params={'limit': 10, 'offset': 0, 'all_projects': True},
+            data=None,
+            verify=True
+        )
+
+    @mock.patch('freezerclient.v2.managers.jobs.requests')
+    def test_list_all_projects(self, mock_requests):
+        self.mock_response.status_code = 200
+        job_list = [{'job_id_0': 'bomboloid'}, {'job_id_1': 'asdfasdf'}]
+        self.mock_response.json.return_value = {'jobs': job_list}
+        mock_requests.get.return_value = self.mock_response
+        retval = self.job_manager.list(all_projects=True)
+        self.assertEqual(job_list, retval)
+        mock_requests.get.assert_called_with(
+            self.job_manager.endpoint,
+            headers=self.headers,
+            params={'limit': 10, 'offset': 0, 'all_projects': True},
+            data=json.dumps(
+                {'match': [{'client_id': 'test_client_id_78900987'}]}
+            ),
+            verify=True
+        )
 
     @mock.patch('freezerclient.v2.managers.jobs.requests')
     def test_update_ok(self, mock_requests):
@@ -271,3 +306,56 @@ class TestJobManager(unittest.TestCase):
         mock_requests.post.return_value = self.mock_response
         self.assertRaises(exceptions.ApiClientException,
                           self.job_manager.abort_job, job_id)
+
+
+class TestJobList(unittest.TestCase):
+    def setUp(self):
+        self.app = mock.Mock()
+        self.app.client = mock.Mock()
+        self.job_list = jobs_cmd.JobList(self.app, mock.Mock())
+
+    def test_get_parser(self):
+        parser = self.job_list.get_parser('test')
+        self.assertEqual('Specify a limit for search query',
+                         parser._option_string_actions['--limit'].help)
+        self.assertEqual('Get jobs for all projects',
+                         parser._option_string_actions['--all-projects'].help)
+
+    def test_take_action_all_projects(self):
+        parsed_args = mock.Mock()
+        parsed_args.limit = 10
+        parsed_args.offset = 0
+        parsed_args.search = ''
+        parsed_args.client_id = ''
+        parsed_args.all_projects = True
+
+        self.app.client.jobs.list_all.return_value = []
+
+        columns, data = self.job_list.take_action(parsed_args)
+
+        self.app.client.jobs.list_all.assert_called_once_with(
+            limit=10,
+            offset=0,
+            search={},
+            all_projects=True
+        )
+
+    def test_take_action_client_id_all_projects(self):
+        parsed_args = mock.Mock()
+        parsed_args.limit = 10
+        parsed_args.offset = 0
+        parsed_args.search = ''
+        parsed_args.client_id = 'test_client'
+        parsed_args.all_projects = True
+
+        self.app.client.jobs.list.return_value = []
+
+        columns, data = self.job_list.take_action(parsed_args)
+
+        self.app.client.jobs.list.assert_called_once_with(
+            limit=10,
+            offset=0,
+            search={},
+            client_id='test_client',
+            all_projects=True
+        )
