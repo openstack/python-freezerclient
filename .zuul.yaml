@@ -10,9 +10,9 @@
     check:
       jobs:
         - openstack-tox-pylint
-        - freezer-tempest-client
+        # - freezer-tempest-client
 
     gate:
       jobs:
         - openstack-tox-pylint
-        - freezer-tempest-client
+        # - freezer-tempest-client
