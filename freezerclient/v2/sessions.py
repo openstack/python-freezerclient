@@ -26,6 +26,41 @@ from freezerclient import utils
 logging = logging.getLogger(__name__)
 
 
+def format_session(session):
+    column = (
+        'Session ID',
+        'Session tag',
+        'Description',
+        'Status',
+        'Result',
+        'Jobs',
+        'Hold off',
+        'Schedule',
+        'Last start',
+        'Time start',
+        'Time end',
+        'Project id',
+        'User id',
+    )
+
+    data = (
+        session.get('session_id'),
+        session.get('session_tag'),
+        session.get('description'),
+        session.get('status'),
+        session.get('result'),
+        pprint.pformat(session.get('jobs')),
+        session.get('hold_off'),
+        pprint.pformat(session.get('schedule')),
+        session.get('last_start'),
+        session.get('time_start'),
+        session.get('time_end'),
+        session.get('project_id'),
+        session.get('user_id'),
+    )
+    return column, data
+
+
 class SessionShow(show.ShowOne):
     """Show a single session"""
     def get_parser(self, prog_name):
@@ -40,38 +75,7 @@ class SessionShow(show.ShowOne):
         if not session:
             raise exceptions.ApiClientException('Session not found')
 
-        column = (
-            'Session ID',
-            'Session tag',
-            'Description',
-            'Status',
-            'Result',
-            'Jobs',
-            'Hold off',
-            'Schedule',
-            'Last start',
-            'Time start',
-            'Time end',
-            'Project id',
-            'User id',
-        )
-
-        data = (
-            session.get('session_id'),
-            session.get('session_tag'),
-            session.get('description'),
-            session.get('status'),
-            session.get('result'),
-            pprint.pformat(session.get('jobs')),
-            session.get('hold_off'),
-            pprint.pformat(session.get('schedule')),
-            session.get('last_start'),
-            session.get('time_start'),
-            session.get('time_end'),
-            session.get('project_id'),
-            session.get('user_id'),
-        )
-        return column, data
+        return format_session(session)
 
 
 class SessionList(lister.Lister):
@@ -126,7 +130,7 @@ class SessionList(lister.Lister):
         return columns, data
 
 
-class SessionCreate(command.Command):
+class SessionCreate(show.ShowOne):
     """Create a session from a file"""
     def get_parser(self, prog_name):
         parser = super(SessionCreate, self).get_parser(prog_name)
@@ -137,9 +141,13 @@ class SessionCreate(command.Command):
         return parser
 
     def take_action(self, parsed_args):
-        session = utils.doc_from_json_file(parsed_args.file)
-        session_id = self.app.client.sessions.create(session)
-        logging.info('Session {0} created'.format(session_id))
+        session_data = utils.doc_from_json_file(parsed_args.file)
+        session_id = self.app.client.sessions.create(session_data)
+        session = self.app.client.sessions.get(session_id)
+        if not session:
+            raise exceptions.ApiClientException(
+                'Session created but not found')
+        return format_session(session)
 
 
 class SessionDelete(command.Command):
@@ -153,11 +161,9 @@ class SessionDelete(command.Command):
     def take_action(self, parsed_args):
         session = self.app.client.sessions.get(parsed_args.session_id)
         if not session:
-            logging.info('Unable to delete specified session.')
             raise exceptions.ApiClientException('Session not found')
 
         self.app.client.sessions.delete(parsed_args.session_id)
-        logging.info('Session {0} deleted'.format(parsed_args.session_id))
 
 
 class SessionAddJob(command.Command):
@@ -177,8 +183,6 @@ class SessionAddJob(command.Command):
     def take_action(self, parsed_args):
         self.app.client.sessions.add_job(parsed_args.session_id,
                                          parsed_args.job_id)
-        logging.info('Job {0} added correctly to session {1}'.format(
-            parsed_args.job_id, parsed_args.session_id))
 
 
 class SessionRemoveJob(command.Command):
@@ -209,12 +213,9 @@ class SessionRemoveJob(command.Command):
                 pass
             else:
                 raise exceptions.ApiClientException(error.message)
-        else:
-            logging.info('Job {0} removed correctly from session {1}'.format(
-                parsed_args.job_id, parsed_args.session_id))
 
 
-class SessionUpdate(command.Command):
+class SessionUpdate(show.ShowOne):
     """Update a session from a file"""
     def get_parser(self, prog_name):
         parser = super(SessionUpdate, self).get_parser(prog_name)
@@ -226,9 +227,12 @@ class SessionUpdate(command.Command):
         return parser
 
     def take_action(self, parsed_args):
-        session = utils.doc_from_json_file(parsed_args.file)
-        self.app.client.sessions.update(parsed_args.session_id, session)
-        logging.info('Session {0} updated'.format(parsed_args.session_id))
+        session_data = utils.doc_from_json_file(parsed_args.file)
+        self.app.client.sessions.update(parsed_args.session_id, session_data)
+        session = self.app.client.sessions.get(parsed_args.session_id)
+        if not session:
+            raise exceptions.ApiClientException('Session not found')
+        return format_session(session)
 
 
 class SessionStart(command.Command):
@@ -253,7 +257,6 @@ class SessionStart(command.Command):
     def take_action(self, parsed_args):
         session = self.app.client.sessions.get(parsed_args.session_id)
         if not session:
-            logging.info('Unable to start specified session.')
             raise exceptions.ApiClientException('Session not found')
 
         self.app.client.sessions.start_session(
@@ -261,5 +264,3 @@ class SessionStart(command.Command):
             parsed_args.job_id,
             parsed_args.job_tag
         )
-        logging.info('Session {0} start requested'.format(
-            parsed_args.session_id))

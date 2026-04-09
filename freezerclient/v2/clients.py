@@ -25,6 +25,23 @@ from freezerclient import utils
 logging = logging.getLogger(__name__)
 
 
+def format_client(client):
+    column = (
+        'Client ID',
+        'Client UUID',
+        'hostname',
+        'description'
+    )
+    data = (
+        client.get('client', {}).get('client_id'),
+        client.get('client', {}).get('uuid'),
+        client.get('client', {}).get('hostname'),
+        client.get('client', {}).get('description', '')
+    )
+
+    return column, data
+
+
 class ClientShow(show.ShowOne):
     """Show a single client"""
     def get_parser(self, prog_name):
@@ -39,20 +56,7 @@ class ClientShow(show.ShowOne):
         if not client:
             raise exceptions.ApiClientException('Client not found')
 
-        column = (
-            'Client ID',
-            'Client UUID',
-            'hostname',
-            'description'
-        )
-        data = (
-            client.get('client', {}).get('client_id'),
-            client.get('client', {}).get('uuid'),
-            client.get('client', {}).get('hostname'),
-            client.get('client', {}).get('description', '')
-        )
-
-        return column, data
+        return format_client(client)
 
 
 class ClientList(lister.Lister):
@@ -114,10 +118,9 @@ class ClientDelete(command.Command):
 
     def take_action(self, parsed_args):
         self.app.client.clients.delete(parsed_args.client_id)
-        logging.info('Client {0} deleted'.format(parsed_args.client_id))
 
 
-class ClientRegister(command.Command):
+class ClientRegister(show.ShowOne):
     """Register a new client"""
     def get_parser(self, prog_name):
         parser = super(ClientRegister, self).get_parser(prog_name)
@@ -128,10 +131,14 @@ class ClientRegister(command.Command):
         return parser
 
     def take_action(self, parsed_args):
-        client = utils.doc_from_json_file(parsed_args.file)
+        client_data = utils.doc_from_json_file(parsed_args.file)
         try:
-            client_id = self.app.client.clients.create(client)
+            client_id = self.app.client.clients.create(client_data)
         except Exception as err:
             raise exceptions.ApiClientException(err.message)
         else:
-            logging.info("Client {0} registered".format(client_id))
+            client = self.app.client.clients.get(client_id)
+            if not client:
+                raise exceptions.ApiClientException(
+                    'Client registered but not found')
+            return format_client(client)

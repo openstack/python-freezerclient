@@ -26,6 +26,40 @@ from freezerclient import utils
 logging = logging.getLogger(__name__)
 
 
+def format_job(job):
+    column = (
+        'Job ID',
+        'Client ID',
+        'User ID',
+        'Session ID',
+        'Description',
+        'Actions',
+        'Start Date',
+        'End Date',
+        'Interval',
+        'Status',
+        'Result',
+        'Current pid',
+        'Event',
+    )
+    data = (
+        job.get('job_id'),
+        job.get('client_id'),
+        job.get('user_id'),
+        job.get('session_id', ''),
+        job.get('description'),
+        pprint.pformat(job.get('job_actions')),
+        job.get('job_schedule', {}).get('schedule_start_date', ''),
+        job.get('job_schedule', {}).get('schedule_end_date', ''),
+        job.get('job_schedule', {}).get('schedule_interval', ''),
+        job.get('job_schedule', {}).get('status', ''),
+        job.get('job_schedule', {}).get('result', ''),
+        job.get('job_schedule', {}).get('current_pid', ''),
+        job.get('job_schedule', {}).get('event', ''),
+    )
+    return column, data
+
+
 class JobShow(show.ShowOne):
     """Show a single job"""
     def get_parser(self, prog_name):
@@ -40,37 +74,7 @@ class JobShow(show.ShowOne):
         if not job:
             raise exceptions.ApiClientException('Job not found')
 
-        column = (
-            'Job ID',
-            'Client ID',
-            'User ID',
-            'Session ID',
-            'Description',
-            'Actions',
-            'Start Date',
-            'End Date',
-            'Interval',
-            'Status',
-            'Result',
-            'Current pid',
-            'Event',
-        )
-        data = (
-            job.get('job_id'),
-            job.get('client_id'),
-            job.get('user_id'),
-            job.get('session_id', ''),
-            job.get('description'),
-            pprint.pformat(job.get('job_actions')),
-            job.get('job_schedule', {}).get('schedule_start_date', ''),
-            job.get('job_schedule', {}).get('schedule_end_date', ''),
-            job.get('job_schedule', {}).get('schedule_interval', ''),
-            job.get('job_schedule', {}).get('status', ''),
-            job.get('job_schedule', {}).get('result', ''),
-            job.get('job_schedule', {}).get('current_pid', ''),
-            job.get('job_schedule', {}).get('event', ''),
-        )
-        return column, data
+        return format_job(job)
 
 
 class JobList(lister.Lister):
@@ -197,10 +201,9 @@ class JobDelete(command.Command):
 
     def take_action(self, parsed_args):
         self.app.client.jobs.delete(parsed_args.job_id)
-        logging.info('Job {0} deleted'.format(parsed_args.job_id))
 
 
-class JobCreate(command.Command):
+class JobCreate(show.ShowOne):
     """Create a new job from a file"""
     def get_parser(self, prog_name):
         parser = super(JobCreate, self).get_parser(prog_name)
@@ -220,10 +223,13 @@ class JobCreate(command.Command):
         return parser
 
     def take_action(self, parsed_args):
-        job = utils.doc_from_json_file(parsed_args.file)
-        job['client_id'] = parsed_args.client_id
-        job_id = self.app.client.jobs.create(job)
-        logging.info('Job {0} created'.format(job_id))
+        job_data = utils.doc_from_json_file(parsed_args.file)
+        job_data['client_id'] = parsed_args.client_id
+        job_id = self.app.client.jobs.create(job_data)
+        job = self.app.client.jobs.get(job_id)
+        if not job:
+            raise exceptions.ApiClientException('Job created but not found')
+        return format_job(job)
 
 
 class JobStart(command.Command):
@@ -236,8 +242,6 @@ class JobStart(command.Command):
 
     def take_action(self, parsed_args):
         self.app.client.jobs.start_job(parsed_args.job_id)
-        logging.info("Start request sent "
-                     "for job {0}".format(parsed_args.job_id))
 
 
 class JobStop(command.Command):
@@ -250,8 +254,6 @@ class JobStop(command.Command):
 
     def take_action(self, parsed_args):
         self.app.client.jobs.stop_job(parsed_args.job_id)
-        logging.info("Stop request sent "
-                     "for job {0}".format(parsed_args.job_id))
 
 
 class JobAbort(command.Command):
@@ -264,11 +266,9 @@ class JobAbort(command.Command):
 
     def take_action(self, parsed_args):
         self.app.client.jobs.abort_job(parsed_args.job_id)
-        logging.info("Abort request sent "
-                     "for job {0}".format(parsed_args.job_id))
 
 
-class JobUpdate(command.Command):
+class JobUpdate(show.ShowOne):
     """Update a job from a file"""
     def get_parser(self, prog_name):
         parser = super(JobUpdate, self).get_parser(prog_name)
@@ -280,6 +280,9 @@ class JobUpdate(command.Command):
         return parser
 
     def take_action(self, parsed_args):
-        job = utils.doc_from_json_file(parsed_args.file)
-        self.app.client.jobs.update(parsed_args.job_id, job)
-        logging.info('Job {0} updated'.format(parsed_args.job_id))
+        job_data = utils.doc_from_json_file(parsed_args.file)
+        self.app.client.jobs.update(parsed_args.job_id, job_data)
+        job = self.app.client.jobs.get(parsed_args.job_id)
+        if not job:
+            raise exceptions.ApiClientException('Job not found')
+        return format_job(job)

@@ -27,6 +27,24 @@ from freezerclient import utils
 logging = logging.getLogger(__name__)
 
 
+def format_backup(backup):
+    column = (
+        'Backup ID',
+        'Project ID',
+        'User ID',
+        'User name',
+        'Metadata'
+    )
+    data = (
+        backup.get('backup_uuid'),
+        backup.get('project_id'),
+        backup.get('user_id'),
+        backup.get('user_name'),
+        pprint.pformat(backup.get('backup_metadata'))
+    )
+    return column, data
+
+
 class BackupShow(show.ShowOne):
     """Show the metadata of a single backup"""
     def get_parser(self, prog_name):
@@ -40,21 +58,7 @@ class BackupShow(show.ShowOne):
         if not backup:
             raise exceptions.ApiClientException('Backup not found')
 
-        column = (
-            'Backup ID',
-            'Project ID',
-            'User ID',
-            'User name',
-            'Metadata'
-        )
-        data = (
-            backup.get('backup_uuid'),
-            backup.get('project_id'),
-            backup.get('user_id'),
-            backup.get('user_name'),
-            pprint.pformat(backup.get('backup_metadata'))
-        )
-        return column, data
+        return format_backup(backup)
 
 
 class BackupList(lister.Lister):
@@ -126,10 +130,9 @@ class BackupDelete(command.Command):
 
     def take_action(self, parsed_args):
         self.app.client.backups.delete(parsed_args.backup_uuid)
-        logging.info('Backup {0} deleted'.format(parsed_args.backup_uuid))
 
 
-class BackupCreate(command.Command):
+class BackupCreate(show.ShowOne):
     """Create an backup from a file"""
     def get_parser(self, prog_name):
         parser = super(BackupCreate, self).get_parser(prog_name)
@@ -140,6 +143,9 @@ class BackupCreate(command.Command):
         return parser
 
     def take_action(self, parsed_args):
-        backup = utils.doc_from_json_file(parsed_args.file)
-        backup_id = self.app.client.backups.create(backup)
-        logging.info('Backup {0} created'.format(backup_id))
+        backup_metadata = utils.doc_from_json_file(parsed_args.file)
+        backup_id = self.app.client.backups.create(backup_metadata)
+        backup = self.app.client.backups.get(backup_id)
+        if not backup:
+            raise exceptions.ApiClientException('Backup created but not found')
+        return format_backup(backup)

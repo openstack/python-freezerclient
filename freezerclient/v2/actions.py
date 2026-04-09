@@ -25,6 +25,43 @@ from freezerclient import utils
 logging = logging.getLogger(__name__)
 
 
+def format_action(action):
+    column = (
+        'Action ID',
+        'Name',
+        'Action',
+        'Mode',
+        'Path to Backup or Restore',
+        'Storage',
+        'Snapshot',
+        'Container',
+        'Log_file',
+        'Remove_older_than',
+        'Max_retries_interval',
+        'Max_retries',
+        'User_id',
+        'Project_id'
+    )
+
+    data = (
+        action.get('action_id'),
+        action.get('freezer_action', {}).get('backup_name', ''),
+        action.get('freezer_action', {}).get('action', 'backup'),
+        action.get('freezer_action', {}).get('mode', 'fs'),
+        action.get('freezer_action', {}).get('path_to_backup', ''),
+        action.get('freezer_action', {}).get('storage', 'swift'),
+        action.get('freezer_action', {}).get('snapshot', 'False'),
+        action.get('freezer_action', {}).get('container', ''),
+        action.get('freezer_action', {}).get('log_file', ''),
+        action.get('freezer_action', {}).get('remove_older_than', '365'),
+        action.get('max_retries_interval', '6'),
+        action.get('max_retries', '5'),
+        action.get('user_id', ''),
+        action.get('project_id', ''),
+    )
+    return column, data
+
+
 class ActionShow(show.ShowOne):
     """Show a single action """
     def get_parser(self, prog_name):
@@ -39,41 +76,7 @@ class ActionShow(show.ShowOne):
         if not action:
             raise exceptions.ApiClientException('Action not found')
 
-        column = (
-            'Action ID',
-            'Name',
-            'Action',
-            'Mode',
-            'Path to Backup or Restore',
-            'Storage',
-            'Snapshot',
-            'Container',
-            'Log_file',
-            'Remove_older_than',
-            'Max_retries_interval',
-            'Max_retries',
-            'User_id',
-            'Project_id'
-        )
-
-        data = (
-            action.get('action_id'),
-            action.get('freezer_action', {}).get('backup_name', ''),
-            action.get('freezer_action', {}).get('action', 'backup'),
-            action.get('freezer_action', {}).get('mode', 'fs'),
-            action.get('freezer_action', {}).get('path_to_backup', ''),
-            action.get('freezer_action', {}).get('storage', 'swift'),
-            action.get('freezer_action', {}).get('snapshot', 'False'),
-            action.get('freezer_action', {}).get('container', ''),
-            action.get('freezer_action', {}).get('log_file', ''),
-            action.get('freezer_action', {}).get('remove_older_than', '365'),
-            action.get('max_retries_interval', '6'),
-            action.get('max_retries', '5'),
-            action.get('user_id', ''),
-            action.get('project_id', ''),
-        )
-
-        return column, data
+        return format_action(action)
 
 
 class ActionList(lister.Lister):
@@ -151,10 +154,9 @@ class ActionDelete(command.Command):
 
     def take_action(self, parsed_args):
         self.app.client.actions.delete(parsed_args.action_id)
-        logging.info('Action {0} deleted'.format(parsed_args.action_id))
 
 
-class ActionCreate(command.Command):
+class ActionCreate(show.ShowOne):
     """Create an action from a file"""
     def get_parser(self, prog_name):
         parser = super(ActionCreate, self).get_parser(prog_name)
@@ -165,12 +167,15 @@ class ActionCreate(command.Command):
         return parser
 
     def take_action(self, parsed_args):
-        action = utils.doc_from_json_file(parsed_args.file)
-        action_id = self.app.client.actions.create(action)
-        logging.info('Action {0} created'.format(action_id))
+        action_data = utils.doc_from_json_file(parsed_args.file)
+        action_id = self.app.client.actions.create(action_data)
+        action = self.app.client.actions.get(action_id)
+        if not action:
+            raise exceptions.ApiClientException('Action created but not found')
+        return format_action(action)
 
 
-class ActionUpdate(command.Command):
+class ActionUpdate(show.ShowOne):
     """Update an action from a file"""
     def get_parser(self, prog_name):
         parser = super(ActionUpdate, self).get_parser(prog_name)
@@ -182,6 +187,9 @@ class ActionUpdate(command.Command):
         return parser
 
     def take_action(self, parsed_args):
-        action = utils.doc_from_json_file(parsed_args.file)
-        self.app.client.actions.update(parsed_args.action_id, action)
-        logging.info('Action {0} updated'.format(parsed_args.action_id))
+        action_data = utils.doc_from_json_file(parsed_args.file)
+        self.app.client.actions.update(parsed_args.action_id, action_data)
+        action = self.app.client.actions.get(parsed_args.action_id)
+        if not action:
+            raise exceptions.ApiClientException('Action not found')
+        return format_action(action)
