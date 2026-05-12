@@ -135,3 +135,40 @@ class TestClientMock(unittest.TestCase):
                           auth_url='blabla')
         self.assertIsInstance(c, client.Client)
         self.assertEqual(c.client_id, 'H2O_parmenide')
+
+    @mock.patch.object(kaloading.session, 'Session', autospec=True)
+    @mock.patch.object(kaloading, 'get_plugin_loader', autospec=True)
+    def test_client_new_with_kwargs_trust(self, mock_ks_loader,
+                                          mock_ks_session):
+        mock_ks_loader.return_value.load_from_options.return_value = 'auth'
+        kwargs = {'auth_url': 'one',
+                  'project_id': 'two',
+                  'project_name': 'four',
+                  'user_domain_id': 'five',
+                  'user_domain_name': 'six',
+                  'project_domain_id': 'senven',
+                  'project_domain_name': 'eight',
+                  'username': 'nine',
+                  'password': 'ten',
+                  'trust_id': 'trust_eleven'}
+
+        c = client.Client(**kwargs)
+        self.assertIsInstance(c, client.Client)
+        self.assertEqual('one', c.opts.os_auth_url)
+        self.assertEqual('trust_eleven', c.opts.os_trust_id)
+
+        # Trigger session creation to check auth_kwargs
+        _ = c.session
+
+        mock_ks_loader.assert_called_with('password')
+        call_args = mock_ks_loader.return_value.load_from_options.call_args[1]
+        self.assertEqual('trust_eleven', call_args['trust_id'])
+        self.assertEqual('nine', call_args['username'])
+        self.assertEqual('ten', call_args['password'])
+        self.assertEqual('five', call_args['user_domain_id'])
+        self.assertEqual('six', call_args['user_domain_name'])
+        # Project info should NOT be in call_args
+        self.assertNotIn('project_id', call_args)
+        self.assertNotIn('project_name', call_args)
+        self.assertNotIn('project_domain_id', call_args)
+        self.assertNotIn('project_domain_name', call_args)

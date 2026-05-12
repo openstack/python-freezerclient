@@ -35,7 +35,8 @@ class Client(object):
                  endpoint_type=None, opts=None, project_name=None,
                  user_domain_name=None, user_domain_id=None,
                  project_domain_name=None, project_domain_id=None,
-                 cert=None, cacert=None, insecure=False, project_id=None):
+                 cert=None, cacert=None, insecure=False, project_id=None,
+                 trust_id=None):
         """
         Initialize a new client for the Disaster Recovery v2 API.
         :param token: keystone token
@@ -78,6 +79,7 @@ class Client(object):
             self.opts.os_user_domain_id = user_domain_id or None
             self.opts.os_project_domain_name = project_domain_name or None
             self.opts.os_project_domain_id = project_domain_id or None
+            self.opts.os_trust_id = trust_id or None
             self.opts.os_cacert = cacert or None
             self.opts.insecure = insecure
             self.opts.cert = cert
@@ -104,26 +106,34 @@ class Client(object):
     def session(self):
         if self._session:
             return self._session
-        auth_type = 'password'
-        auth_kwargs = {
-            'auth_url': self.opts.os_auth_url,
-            'project_id': self.opts.os_project_id,
-            'project_name': self.opts.os_project_name,
-            'project_domain_id': self.opts.os_project_domain_id,
-            'project_domain_name': self.opts.os_project_domain_name,
-        }
+
+        auth_kwargs = {'auth_url': self.opts.os_auth_url}
+
         if self.opts.os_username and self.opts.os_password:
+            auth_type = 'password'
             auth_kwargs.update({
                 'username': self.opts.os_username,
                 'password': self.opts.os_password,
                 'user_domain_id': self.opts.os_user_domain_id,
                 'user_domain_name': self.opts.os_user_domain_name,
             })
+            if self.opts.os_trust_id:
+                auth_kwargs['trust_id'] = self.opts.os_trust_id
+            else:
+                auth_kwargs.update({
+                    'project_id': self.opts.os_project_id,
+                    'project_name': self.opts.os_project_name,
+                    'project_domain_id': self.opts.os_project_domain_id,
+                    'project_domain_name': self.opts.os_project_domain_name,
+                })
         elif self.opts.os_token:
             auth_type = 'token'
             auth_kwargs.update({
                 'token': self.opts.os_token,
             })
+        else:
+            auth_type = 'password'
+
         loader = kaloading.get_plugin_loader(auth_type)
         auth_plugin = loader.load_from_options(**auth_kwargs)
         # Let keystoneauth do the necessary parameter conversions
