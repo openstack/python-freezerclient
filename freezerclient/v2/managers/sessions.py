@@ -17,20 +17,11 @@ import requests
 from oslo_serialization import jsonutils as json
 
 from freezerclient import exceptions
-from freezerclient import utils
+from freezerclient.v2.managers import base
 
 
-class SessionManager(object):
-
-    def __init__(self, client, verify=True):
-        self.client = client
-        self.endpoint = '{0}/v2/{1}/sessions/'.format(
-            self.client.endpoint, self.client.project_id)
-        self.verify = verify
-
-    @property
-    def headers(self):
-        return utils.create_headers_for_request(self.client.auth_token)
+class SessionManager(base.BaseManager):
+    resource_name = 'sessions'
 
     def create(self, doc, session_id=''):
         session_id = session_id or doc.get('session_id', '')
