@@ -29,18 +29,12 @@ logging.getLogger('requests').setLevel(logging.WARN)
 
 class FreezerCommandManager(commandmanager.CommandManager):
     """All commands available for the shell are registered here"""
-    if utils.check_api_version() == '1':
-        from freezerclient.v1 import actions
-        from freezerclient.v1 import backups
-        from freezerclient.v1 import clients
-        from freezerclient.v1 import jobs
-        from freezerclient.v1 import sessions
-    else:
-        from freezerclient.v2 import actions
-        from freezerclient.v2 import backups
-        from freezerclient.v2 import clients
-        from freezerclient.v2 import jobs
-        from freezerclient.v2 import sessions
+
+    from freezerclient.v2 import actions
+    from freezerclient.v2 import backups
+    from freezerclient.v2 import clients
+    from freezerclient.v2 import jobs
+    from freezerclient.v2 import sessions
 
     SHELL_COMMANDS = {
         'job-show': jobs.JobShow,

@@ -154,9 +154,7 @@ def check_api_version(api_version=None):
     else:
         freezer_api_version = api_version
 
-    if freezer_api_version == '1':
-        return '1'
-    elif freezer_api_version == '2':
+    if freezer_api_version == '2':
         return '2'
     else:
         raise Exception('Freezer API version not supported')

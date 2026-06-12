@@ -16,39 +16,12 @@ import unittest
 from unittest import mock
 
 from freezerclient import client
-from freezerclient import v1
 from freezerclient import v2
 
 
 class ClientTest(unittest.TestCase):
     def setUp(self):
         self.session = mock.Mock()
-
-    def test_client_v1_endpoint(self):
-        gc = client.Client(version='1', endpoint='http://freezer.org',
-                           session=self.session)
-        self.assertEqual("http://freezer.org", gc.opts.os_backup_url)
-        self.assertIsInstance(gc, v1.client.Client)
-
-    def test_client_v1_auth_url(self):
-        gc = client.Client(version='1', auth_url='http://example.com',
-                           endpoint='http://freezer.org',
-                           session=self.session)
-        self.assertEqual("http://freezer.org", gc.opts.os_backup_url)
-        self.assertIsInstance(gc, v1.client.Client)
-
-    def test_client_v1_username(self):
-        gc = client.Client('1', endpoint='http://freezer.org',
-                           username='caihui', session=self.session)
-        self.assertEqual("caihui", gc.opts.os_username)
-        self.assertIsInstance(gc, v1.client.Client)
-
-    def test_client_v1_password(self):
-        gc = client.Client('1', password='password',
-                           endpoint='http://freezer.org',
-                           session=self.session)
-        self.assertEqual("password", gc.opts.os_password)
-        self.assertIsInstance(gc, v1.client.Client)
 
     def test_client_v2_auth_url(self):
         gc = client.Client(version='2', auth_url='http://example.com',

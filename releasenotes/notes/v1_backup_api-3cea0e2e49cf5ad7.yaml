@@ -1,0 +1,6 @@
+---
+
+deprecations:
+  - |
+    Support for v1 Backup API has been removed. Please ensure you are using
+    v2 Backup API.
