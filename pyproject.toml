@@ -1,3 +1,92 @@
 [build-system]
-requires = ["pbr>=6.0.0", "setuptools>=64.0.0"]
+requires = ["pbr>=6.1.1"]
 build-backend = "pbr.build"
+
+[project]
+name = "python-freezerclient"
+description = "OpenStack Disaster Recovery API Client Library"
+authors = [
+    {name = "OpenStack", email = "openstack-discuss@lists.openstack.org"},
+]
+readme = {file = "README.rst", content-type = "text/x-rst"}
+license = {text = "Apache License, Version 2.0"}
+dynamic = ["version", "dependencies"]
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Development Status :: 5 - Production/Stable",
+    "Natural Language :: English",
+    "Environment :: OpenStack",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "Intended Audience :: System Administrators",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: MacOS",
+    "Operating System :: POSIX :: BSD :: FreeBSD",
+    "Operating System :: POSIX :: BSD :: NetBSD",
+    "Operating System :: POSIX :: BSD :: OpenBSD",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: Unix",
+    "Topic :: System :: Archiving :: Backup",
+    "Topic :: System :: Archiving :: Compression",
+    "Topic :: System :: Archiving",
+]
+keywords = [
+    "freezer",
+    "freezerclient",
+    "python-freezerclient",
+]
+
+[project.urls]
+Homepage = "https://docs.openstack.org/python-freezerclient/latest/"
+
+[tool.setuptools]
+packages = [
+    "freezerclient",
+]
+
+[project.entry-points."console_scripts"]
+freezer = "freezerclient.shell:main"
+
+[project.entry-points."openstack.cli.extension"]
+backup = "freezerclient.osc.plugin"
+
+[project.entry-points."openstack.backup.v2"]
+backup_job_show = "freezerclient.v2.jobs:JobShow"
+backup_job_list = "freezerclient.v2.jobs:JobList"
+backup_job_create = "freezerclient.v2.jobs:JobCreate"
+backup_job_get = "freezerclient.v2.jobs:JobGet"
+backup_job_delete = "freezerclient.v2.jobs:JobDelete"
+backup_job_start = "freezerclient.v2.jobs:JobStart"
+backup_job_stop = "freezerclient.v2.jobs:JobStop"
+backup_job_abort = "freezerclient.v2.jobs:JobAbort"
+backup_job_update = "freezerclient.v2.jobs:JobUpdate"
+backup_client_list = "freezerclient.v2.clients:ClientList"
+backup_client_show = "freezerclient.v2.clients:ClientShow"
+backup_client_register = "freezerclient.v2.clients:ClientRegister"
+backup_client_delete = "freezerclient.v2.clients:ClientDelete"
+backup_list = "freezerclient.v2.backups:BackupList"
+backup_show = "freezerclient.v2.backups:BackupShow"
+backup_delete = "freezerclient.v2.backups:BackupDelete"
+backup_create = "freezerclient.v2.backups:BackupCreate"
+backup_session_list = "freezerclient.v2.sessions:SessionList"
+backup_session_show = "freezerclient.v2.sessions:SessionShow"
+backup_session_create = "freezerclient.v2.sessions:SessionCreate"
+backup_session_delete = "freezerclient.v2.sessions:SessionDelete"
+backup_session_add_job = "freezerclient.v2.sessions:SessionAddJob"
+backup_session_remove_job = "freezerclient.v2.sessions:SessionRemoveJob"
+backup_session_update = "freezerclient.v2.sessions:SessionUpdate"
+backup_session_start = "freezerclient.v2.sessions:SessionStart"
+backup_action_show = "freezerclient.v2.actions:ActionShow"
+backup_action_list = "freezerclient.v2.actions:ActionList"
+backup_action_delete = "freezerclient.v2.actions:ActionDelete"
+backup_action_create = "freezerclient.v2.actions:ActionCreate"
+backup_action_update = "freezerclient.v2.actions:ActionUpdate"
