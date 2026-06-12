@@ -16,10 +16,7 @@ import datetime
 import logging
 import pprint
 
-from cliff import command
-from cliff import lister
-from cliff import show
-
+from freezerclient import base
 from freezerclient import exceptions
 from freezerclient import utils
 
@@ -45,7 +42,7 @@ def format_backup(backup):
     return column, data
 
 
-class BackupShow(show.ShowOne):
+class BackupShow(base.FreezerShowOne):
     """Show the metadata of a single backup"""
     def get_parser(self, prog_name):
         parser = super(BackupShow, self).get_parser(prog_name)
@@ -54,14 +51,14 @@ class BackupShow(show.ShowOne):
         return parser
 
     def take_action(self, parsed_args):
-        backup = self.app.client.backups.get(parsed_args.backup_uuid)
+        backup = self.client.backups.get(parsed_args.backup_uuid)
         if not backup:
             raise exceptions.ApiClientException('Backup not found')
 
         return format_backup(backup)
 
 
-class BackupList(lister.Lister):
+class BackupList(base.FreezerLister):
     """List all backups for your user"""
     def get_parser(self, prog_name):
         parser = super(BackupList, self).get_parser(prog_name)
@@ -91,9 +88,9 @@ class BackupList(lister.Lister):
     def take_action(self, parsed_args):
         search = utils.prepare_search(parsed_args.search)
 
-        backups = self.app.client.backups.list(limit=parsed_args.limit,
-                                               offset=parsed_args.offset,
-                                               search=search)
+        backups = self.client.backups.list(limit=parsed_args.limit,
+                                           offset=parsed_args.offset,
+                                           search=search)
 
         columns = ('Backup ID', 'Backup UUID', 'Hostname', 'Path',
                    'Created at', 'Level')
@@ -120,7 +117,7 @@ class BackupList(lister.Lister):
         return columns, data
 
 
-class BackupDelete(command.Command):
+class BackupDelete(base.FreezerCommand):
     """Delete a backup from the api"""
     def get_parser(self, prog_name):
         parser = super(BackupDelete, self).get_parser(prog_name)
@@ -129,10 +126,10 @@ class BackupDelete(command.Command):
         return parser
 
     def take_action(self, parsed_args):
-        self.app.client.backups.delete(parsed_args.backup_uuid)
+        self.client.backups.delete(parsed_args.backup_uuid)
 
 
-class BackupCreate(show.ShowOne):
+class BackupCreate(base.FreezerShowOne):
     """Create an backup from a file"""
     def get_parser(self, prog_name):
         parser = super(BackupCreate, self).get_parser(prog_name)
@@ -144,8 +141,8 @@ class BackupCreate(show.ShowOne):
 
     def take_action(self, parsed_args):
         backup_metadata = utils.doc_from_json_file(parsed_args.file)
-        backup_id = self.app.client.backups.create(backup_metadata)
-        backup = self.app.client.backups.get(backup_id)
+        backup_id = self.client.backups.create(backup_metadata)
+        backup = self.client.backups.get(backup_id)
         if not backup:
             raise exceptions.ApiClientException('Backup created but not found')
         return format_backup(backup)

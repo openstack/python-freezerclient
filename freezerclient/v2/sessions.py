@@ -15,10 +15,7 @@
 import logging
 import pprint
 
-from cliff import command
-from cliff import lister
-from cliff import show
-
+from freezerclient import base
 from freezerclient import exceptions
 from freezerclient import utils
 
@@ -61,7 +58,7 @@ def format_session(session):
     return column, data
 
 
-class SessionShow(show.ShowOne):
+class SessionShow(base.FreezerShowOne):
     """Show a single session"""
     def get_parser(self, prog_name):
         parser = super(SessionShow, self).get_parser(prog_name)
@@ -70,7 +67,7 @@ class SessionShow(show.ShowOne):
         return parser
 
     def take_action(self, parsed_args):
-        session = self.app.client.sessions.get(parsed_args.session_id)
+        session = self.client.sessions.get(parsed_args.session_id)
 
         if not session:
             raise exceptions.ApiClientException('Session not found')
@@ -78,7 +75,7 @@ class SessionShow(show.ShowOne):
         return format_session(session)
 
 
-class SessionList(lister.Lister):
+class SessionList(base.FreezerLister):
     """List all the sessions for your user"""
     def get_parser(self, prog_name):
         parser = super(SessionList, self).get_parser(prog_name)
@@ -107,7 +104,7 @@ class SessionList(lister.Lister):
 
     def take_action(self, parsed_args):
         search = utils.prepare_search(parsed_args.search)
-        sessions = self.app.client.sessions.list_all(
+        sessions = self.client.sessions.list_all(
             limit=parsed_args.limit,
             offset=parsed_args.offset,
             search=search
@@ -130,7 +127,7 @@ class SessionList(lister.Lister):
         return columns, data
 
 
-class SessionCreate(show.ShowOne):
+class SessionCreate(base.FreezerShowOne):
     """Create a session from a file"""
     def get_parser(self, prog_name):
         parser = super(SessionCreate, self).get_parser(prog_name)
@@ -142,15 +139,15 @@ class SessionCreate(show.ShowOne):
 
     def take_action(self, parsed_args):
         session_data = utils.doc_from_json_file(parsed_args.file)
-        session_id = self.app.client.sessions.create(session_data)
-        session = self.app.client.sessions.get(session_id)
+        session_id = self.client.sessions.create(session_data)
+        session = self.client.sessions.get(session_id)
         if not session:
             raise exceptions.ApiClientException(
                 'Session created but not found')
         return format_session(session)
 
 
-class SessionDelete(command.Command):
+class SessionDelete(base.FreezerCommand):
     """Delete a session"""
     def get_parser(self, prog_name):
         parser = super(SessionDelete, self).get_parser(prog_name)
@@ -159,14 +156,14 @@ class SessionDelete(command.Command):
         return parser
 
     def take_action(self, parsed_args):
-        session = self.app.client.sessions.get(parsed_args.session_id)
+        session = self.client.sessions.get(parsed_args.session_id)
         if not session:
             raise exceptions.ApiClientException('Session not found')
 
-        self.app.client.sessions.delete(parsed_args.session_id)
+        self.client.sessions.delete(parsed_args.session_id)
 
 
-class SessionAddJob(command.Command):
+class SessionAddJob(base.FreezerCommand):
     """Add a job to a session"""
     def get_parser(self, prog_name):
         parser = super(SessionAddJob, self).get_parser(prog_name)
@@ -181,11 +178,11 @@ class SessionAddJob(command.Command):
         return parser
 
     def take_action(self, parsed_args):
-        self.app.client.sessions.add_job(parsed_args.session_id,
-                                         parsed_args.job_id)
+        self.client.sessions.add_job(parsed_args.session_id,
+                                     parsed_args.job_id)
 
 
-class SessionRemoveJob(command.Command):
+class SessionRemoveJob(base.FreezerCommand):
     """Remove a job from a session"""
     def get_parser(self, prog_name):
         parser = super(SessionRemoveJob, self).get_parser(prog_name)
@@ -201,8 +198,8 @@ class SessionRemoveJob(command.Command):
 
     def take_action(self, parsed_args):
         try:
-            self.app.client.sessions.remove_job(parsed_args.session_id,
-                                                parsed_args.job_id)
+            self.client.sessions.remove_job(parsed_args.session_id,
+                                            parsed_args.job_id)
         except Exception as error:
             # there is an error coming from the api when a job is removed
             # with the following text:
@@ -215,7 +212,7 @@ class SessionRemoveJob(command.Command):
                 raise exceptions.ApiClientException(error.message)
 
 
-class SessionUpdate(show.ShowOne):
+class SessionUpdate(base.FreezerShowOne):
     """Update a session from a file"""
     def get_parser(self, prog_name):
         parser = super(SessionUpdate, self).get_parser(prog_name)
@@ -228,14 +225,14 @@ class SessionUpdate(show.ShowOne):
 
     def take_action(self, parsed_args):
         session_data = utils.doc_from_json_file(parsed_args.file)
-        self.app.client.sessions.update(parsed_args.session_id, session_data)
-        session = self.app.client.sessions.get(parsed_args.session_id)
+        self.client.sessions.update(parsed_args.session_id, session_data)
+        session = self.client.sessions.get(parsed_args.session_id)
         if not session:
             raise exceptions.ApiClientException('Session not found')
         return format_session(session)
 
 
-class SessionStart(command.Command):
+class SessionStart(base.FreezerCommand):
     """Start a session"""
     def get_parser(self, prog_name):
         parser = super(SessionStart, self).get_parser(prog_name)
@@ -255,11 +252,11 @@ class SessionStart(command.Command):
         return parser
 
     def take_action(self, parsed_args):
-        session = self.app.client.sessions.get(parsed_args.session_id)
+        session = self.client.sessions.get(parsed_args.session_id)
         if not session:
             raise exceptions.ApiClientException('Session not found')
 
-        self.app.client.sessions.start_session(
+        self.client.sessions.start_session(
             parsed_args.session_id,
             parsed_args.job_id,
             parsed_args.job_tag

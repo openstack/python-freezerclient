@@ -15,10 +15,7 @@
 import logging
 import pprint
 
-from cliff import command
-from cliff import lister
-from cliff import show
-
+from freezerclient import base
 from freezerclient import exceptions
 from freezerclient import utils
 
@@ -60,7 +57,7 @@ def format_job(job):
     return column, data
 
 
-class JobShow(show.ShowOne):
+class JobShow(base.FreezerShowOne):
     """Show a single job"""
     def get_parser(self, prog_name):
         parser = super(JobShow, self).get_parser(prog_name)
@@ -69,7 +66,7 @@ class JobShow(show.ShowOne):
         return parser
 
     def take_action(self, parsed_args):
-        job = self.app.client.jobs.get(parsed_args.job_id)
+        job = self.client.jobs.get(parsed_args.job_id)
 
         if not job:
             raise exceptions.ApiClientException('Job not found')
@@ -77,7 +74,7 @@ class JobShow(show.ShowOne):
         return format_job(job)
 
 
-class JobList(lister.Lister):
+class JobList(base.FreezerLister):
     """List all the jobs for your user"""
     def get_parser(self, prog_name):
         parser = super(JobList, self).get_parser(prog_name)
@@ -123,7 +120,7 @@ class JobList(lister.Lister):
         search = utils.prepare_search(parsed_args.search)
 
         if parsed_args.client_id:
-            jobs = self.app.client.jobs.list(
+            jobs = self.client.jobs.list(
                 limit=parsed_args.limit,
                 offset=parsed_args.offset,
                 search=search,
@@ -131,7 +128,7 @@ class JobList(lister.Lister):
                 all_projects=parsed_args.all_projects,
             )
         else:
-            jobs = self.app.client.jobs.list_all(
+            jobs = self.client.jobs.list_all(
                 limit=parsed_args.limit,
                 offset=parsed_args.offset,
                 search=search,
@@ -165,7 +162,7 @@ class JobList(lister.Lister):
         return columns, data
 
 
-class JobGet(command.Command):
+class JobGet(base.FreezerCommand):
     """Download a job as a json file"""
     def get_parser(self, prog_name):
         parser = super(JobGet, self).get_parser(prog_name)
@@ -180,7 +177,7 @@ class JobGet(command.Command):
         return parser
 
     def take_action(self, parsed_args):
-        job = self.app.client.jobs.get(parsed_args.job_id)
+        job = self.client.jobs.get(parsed_args.job_id)
 
         if not job:
             raise exceptions.ApiClientException('Job not found')
@@ -191,7 +188,7 @@ class JobGet(command.Command):
             pprint.pprint(job)
 
 
-class JobDelete(command.Command):
+class JobDelete(base.FreezerCommand):
     """Delete a job from the api"""
     def get_parser(self, prog_name):
         parser = super(JobDelete, self).get_parser(prog_name)
@@ -200,10 +197,10 @@ class JobDelete(command.Command):
         return parser
 
     def take_action(self, parsed_args):
-        self.app.client.jobs.delete(parsed_args.job_id)
+        self.client.jobs.delete(parsed_args.job_id)
 
 
-class JobCreate(show.ShowOne):
+class JobCreate(base.FreezerShowOne):
     """Create a new job from a file"""
     def get_parser(self, prog_name):
         parser = super(JobCreate, self).get_parser(prog_name)
@@ -225,14 +222,14 @@ class JobCreate(show.ShowOne):
     def take_action(self, parsed_args):
         job_data = utils.doc_from_json_file(parsed_args.file)
         job_data['client_id'] = parsed_args.client_id
-        job_id = self.app.client.jobs.create(job_data)
-        job = self.app.client.jobs.get(job_id)
+        job_id = self.client.jobs.create(job_data)
+        job = self.client.jobs.get(job_id)
         if not job:
             raise exceptions.ApiClientException('Job created but not found')
         return format_job(job)
 
 
-class JobStart(command.Command):
+class JobStart(base.FreezerCommand):
     """Send a start signal for a job"""
     def get_parser(self, prog_name):
         parser = super(JobStart, self).get_parser(prog_name)
@@ -241,10 +238,10 @@ class JobStart(command.Command):
         return parser
 
     def take_action(self, parsed_args):
-        self.app.client.jobs.start_job(parsed_args.job_id)
+        self.client.jobs.start_job(parsed_args.job_id)
 
 
-class JobStop(command.Command):
+class JobStop(base.FreezerCommand):
     """Send a stop signal for a job"""
     def get_parser(self, prog_name):
         parser = super(JobStop, self).get_parser(prog_name)
@@ -253,10 +250,10 @@ class JobStop(command.Command):
         return parser
 
     def take_action(self, parsed_args):
-        self.app.client.jobs.stop_job(parsed_args.job_id)
+        self.client.jobs.stop_job(parsed_args.job_id)
 
 
-class JobAbort(command.Command):
+class JobAbort(base.FreezerCommand):
     """Abort a running job"""
     def get_parser(self, prog_name):
         parser = super(JobAbort, self).get_parser(prog_name)
@@ -265,10 +262,10 @@ class JobAbort(command.Command):
         return parser
 
     def take_action(self, parsed_args):
-        self.app.client.jobs.abort_job(parsed_args.job_id)
+        self.client.jobs.abort_job(parsed_args.job_id)
 
 
-class JobUpdate(show.ShowOne):
+class JobUpdate(base.FreezerShowOne):
     """Update a job from a file"""
     def get_parser(self, prog_name):
         parser = super(JobUpdate, self).get_parser(prog_name)
@@ -281,8 +278,8 @@ class JobUpdate(show.ShowOne):
 
     def take_action(self, parsed_args):
         job_data = utils.doc_from_json_file(parsed_args.file)
-        self.app.client.jobs.update(parsed_args.job_id, job_data)
-        job = self.app.client.jobs.get(parsed_args.job_id)
+        self.client.jobs.update(parsed_args.job_id, job_data)
+        job = self.client.jobs.get(parsed_args.job_id)
         if not job:
             raise exceptions.ApiClientException('Job not found')
         return format_job(job)

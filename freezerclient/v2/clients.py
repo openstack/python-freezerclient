@@ -14,10 +14,7 @@
 
 import logging
 
-from cliff import command
-from cliff import lister
-from cliff import show
-
+from freezerclient import base
 from freezerclient import exceptions
 from freezerclient import utils
 
@@ -42,7 +39,7 @@ def format_client(client):
     return column, data
 
 
-class ClientShow(show.ShowOne):
+class ClientShow(base.FreezerShowOne):
     """Show a single client"""
     def get_parser(self, prog_name):
         parser = super(ClientShow, self).get_parser(prog_name)
@@ -51,7 +48,7 @@ class ClientShow(show.ShowOne):
         return parser
 
     def take_action(self, parsed_args):
-        client = self.app.client.clients.get(parsed_args.client_id)
+        client = self.client.clients.get(parsed_args.client_id)
 
         if not client:
             raise exceptions.ApiClientException('Client not found')
@@ -59,7 +56,7 @@ class ClientShow(show.ShowOne):
         return format_client(client)
 
 
-class ClientList(lister.Lister):
+class ClientList(base.FreezerLister):
     """List of clients registered in the api"""
     def get_parser(self, prog_name):
         parser = super(ClientList, self).get_parser(prog_name)
@@ -89,9 +86,9 @@ class ClientList(lister.Lister):
     def take_action(self, parsed_args):
         search = utils.prepare_search(parsed_args.search)
 
-        clients = self.app.client.clients.list(limit=parsed_args.limit,
-                                               offset=parsed_args.offset,
-                                               search=search)
+        clients = self.client.clients.list(limit=parsed_args.limit,
+                                           offset=parsed_args.offset,
+                                           search=search)
 
         # Print empty table if no clients found
         if not clients:
@@ -108,7 +105,7 @@ class ClientList(lister.Lister):
         return columns, data
 
 
-class ClientDelete(command.Command):
+class ClientDelete(base.FreezerCommand):
     """Delete a client from the api"""
     def get_parser(self, prog_name):
         parser = super(ClientDelete, self).get_parser(prog_name)
@@ -117,10 +114,10 @@ class ClientDelete(command.Command):
         return parser
 
     def take_action(self, parsed_args):
-        self.app.client.clients.delete(parsed_args.client_id)
+        self.client.clients.delete(parsed_args.client_id)
 
 
-class ClientRegister(show.ShowOne):
+class ClientRegister(base.FreezerShowOne):
     """Register a new client"""
     def get_parser(self, prog_name):
         parser = super(ClientRegister, self).get_parser(prog_name)
@@ -133,11 +130,11 @@ class ClientRegister(show.ShowOne):
     def take_action(self, parsed_args):
         client_data = utils.doc_from_json_file(parsed_args.file)
         try:
-            client_id = self.app.client.clients.create(client_data)
+            client_id = self.client.clients.create(client_data)
         except Exception as err:
             raise exceptions.ApiClientException(err.message)
         else:
-            client = self.app.client.clients.get(client_id)
+            client = self.client.clients.get(client_id)
             if not client:
                 raise exceptions.ApiClientException(
                     'Client registered but not found')

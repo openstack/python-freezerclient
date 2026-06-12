@@ -14,10 +14,7 @@
 
 import logging
 
-from cliff import command
-from cliff import lister
-from cliff import show
-
+from freezerclient import base
 from freezerclient import exceptions
 from freezerclient import utils
 
@@ -62,7 +59,7 @@ def format_action(action):
     return column, data
 
 
-class ActionShow(show.ShowOne):
+class ActionShow(base.FreezerShowOne):
     """Show a single action """
     def get_parser(self, prog_name):
         parser = super(ActionShow, self).get_parser(prog_name)
@@ -71,7 +68,7 @@ class ActionShow(show.ShowOne):
         return parser
 
     def take_action(self, parsed_args):
-        action = self.app.client.actions.get(parsed_args.action_id)
+        action = self.client.actions.get(parsed_args.action_id)
 
         if not action:
             raise exceptions.ApiClientException('Action not found')
@@ -79,7 +76,7 @@ class ActionShow(show.ShowOne):
         return format_action(action)
 
 
-class ActionList(lister.Lister):
+class ActionList(base.FreezerLister):
     """List all actions for your user"""
     def get_parser(self, prog_name):
         parser = super(ActionList, self).get_parser(prog_name)
@@ -109,7 +106,7 @@ class ActionList(lister.Lister):
     def take_action(self, parsed_args):
         search = utils.prepare_search(parsed_args.search)
 
-        actions = self.app.client.actions.list(
+        actions = self.client.actions.list(
             limit=parsed_args.limit,
             offset=parsed_args.offset,
             search=search
@@ -144,7 +141,7 @@ class ActionList(lister.Lister):
         return columns, data
 
 
-class ActionDelete(command.Command):
+class ActionDelete(base.FreezerCommand):
     """Delete an action from the api"""
     def get_parser(self, prog_name):
         parser = super(ActionDelete, self).get_parser(prog_name)
@@ -153,10 +150,10 @@ class ActionDelete(command.Command):
         return parser
 
     def take_action(self, parsed_args):
-        self.app.client.actions.delete(parsed_args.action_id)
+        self.client.actions.delete(parsed_args.action_id)
 
 
-class ActionCreate(show.ShowOne):
+class ActionCreate(base.FreezerShowOne):
     """Create an action from a file"""
     def get_parser(self, prog_name):
         parser = super(ActionCreate, self).get_parser(prog_name)
@@ -168,14 +165,14 @@ class ActionCreate(show.ShowOne):
 
     def take_action(self, parsed_args):
         action_data = utils.doc_from_json_file(parsed_args.file)
-        action_id = self.app.client.actions.create(action_data)
-        action = self.app.client.actions.get(action_id)
+        action_id = self.client.actions.create(action_data)
+        action = self.client.actions.get(action_id)
         if not action:
             raise exceptions.ApiClientException('Action created but not found')
         return format_action(action)
 
 
-class ActionUpdate(show.ShowOne):
+class ActionUpdate(base.FreezerShowOne):
     """Update an action from a file"""
     def get_parser(self, prog_name):
         parser = super(ActionUpdate, self).get_parser(prog_name)
@@ -188,8 +185,8 @@ class ActionUpdate(show.ShowOne):
 
     def take_action(self, parsed_args):
         action_data = utils.doc_from_json_file(parsed_args.file)
-        self.app.client.actions.update(parsed_args.action_id, action_data)
-        action = self.app.client.actions.get(parsed_args.action_id)
+        self.client.actions.update(parsed_args.action_id, action_data)
+        action = self.client.actions.get(parsed_args.action_id)
         if not action:
             raise exceptions.ApiClientException('Action not found')
         return format_action(action)

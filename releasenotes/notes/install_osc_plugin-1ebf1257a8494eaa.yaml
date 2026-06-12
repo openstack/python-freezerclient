@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    The freezerclient is now available as a plugin for python-openstackclient.
+    Users can use `openstack backup` command to interact with the client.
