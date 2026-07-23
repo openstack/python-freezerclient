@@ -69,3 +69,13 @@ class BackupsManager(base.BaseManager):
         if r.status_code == 404:
             return None
         raise exceptions.ApiClientException(r)
+
+    def update(self, backup_id, update_doc):
+        endpoint = self.endpoint + backup_id
+        r = requests.patch(endpoint,
+                           data=json.dumps(update_doc),
+                           headers=self.headers,
+                           verify=self.verify)
+        if r.status_code != 200:
+            raise exceptions.ApiClientException(r)
+        return r.json()

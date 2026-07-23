@@ -16,6 +16,7 @@ import unittest
 from unittest import mock
 
 from freezerclient import exceptions
+from freezerclient.v2 import backups as backups_cli
 from freezerclient.v2.managers import backups
 
 
@@ -135,3 +136,50 @@ class TestBackupManager(unittest.TestCase):
         mock_response.json.return_value = {'backups': backup_list}
         mock_requests.get.return_value = mock_response
         self.assertRaises(exceptions.ApiClientException, self.b.list)
+
+    @mock.patch('freezerclient.v2.managers.backups.requests')
+    def test_update_ok(self, mock_requests):
+        mock_response = mock.Mock()
+        mock_response.status_code = 200
+        expected_doc = {'backup_id': 'test_backup_id', 'status': 'available'}
+        mock_response.json.return_value = expected_doc
+        mock_requests.patch.return_value = mock_response
+        retval = self.b.update('test_backup_id', {'status': 'available'})
+        self.assertEqual(expected_doc, retval)
+
+    @mock.patch('freezerclient.v2.managers.backups.requests')
+    def test_update_error(self, mock_requests):
+        mock_response = mock.Mock()
+        mock_response.status_code = 404
+        mock_requests.patch.return_value = mock_response
+        self.assertRaises(exceptions.ApiClientException, self.b.update,
+                          'test_backup_id', {'status': 'completed'})
+
+
+class TestBackupList(unittest.TestCase):
+    def setUp(self):
+        self.app = mock.Mock()
+        self.cmd = backups_cli.BackupList(self.app, mock.Mock())
+
+    def test_take_action_includes_status_column(self):
+        self.app.client.backups.list.return_value = [{
+            'backup_id': 'b1',
+            'backup_uuid': 'uuid1',
+            'status': 'available',
+            'backup_metadata': {
+                'hostname': 'host1',
+                'path_to_backup': '/tmp',
+                'time_stamp': '1600000000',
+                'curr_backup_level': 0
+            }
+        }]
+
+        parsed_args = mock.Mock()
+        parsed_args.limit = 10
+        parsed_args.offset = 0
+        parsed_args.search = ''
+
+        columns, data = self.cmd.take_action(parsed_args)
+        self.assertIn('Status', columns)
+        data_list = list(data)
+        self.assertEqual(data_list[0][5], 'available')

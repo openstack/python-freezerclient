@@ -29,14 +29,14 @@ def format_backup(backup):
         'Backup ID',
         'Project ID',
         'User ID',
-        'User name',
+        'Status',
         'Metadata'
     )
     data = (
         backup.get('backup_uuid'),
         backup.get('project_id'),
         backup.get('user_id'),
-        backup.get('user_name'),
+        backup.get('status'),
         pprint.pformat(backup.get('backup_metadata'))
     )
     return column, data
@@ -93,7 +93,7 @@ class BackupList(base.FreezerLister):
                                            search=search)
 
         columns = ('Backup ID', 'Backup UUID', 'Hostname', 'Path',
-                   'Created at', 'Level')
+                   'Created at', 'Status', 'Level')
 
         # Print empty table if no backups found
         if not backups:
@@ -111,6 +111,7 @@ class BackupList(base.FreezerLister):
                  datetime.datetime.fromtimestamp(
                  int(b.get('backup_metadata', {}).get('time_stamp', '')))
                  if b.get('backup_metadata') else '',
+                 b.get('status', ''),
                  b.get('backup_metadata', {}).get('curr_backup_level', '')
                  ) for b in backups_l)
 
