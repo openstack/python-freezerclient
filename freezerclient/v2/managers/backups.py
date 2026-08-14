@@ -23,15 +23,7 @@ from freezerclient.v2.managers import base
 class BackupsManager(base.BaseManager):
     resource_name = 'backups'
 
-    def create(self, backup_metadata, project_id=None):
-        """Create a backup metadata record.
-
-        :param backup_metadata: dict containing the backup metadata.
-        :param project_id: optional project ID. Accepted for caller
-            compatibility; it is not forwarded to the HTTP request, since
-            the project scope is derived from the authentication token by
-            keystonemiddleware on the server side.
-        """
+    def create(self, backup_metadata):
         r = requests.post(self.endpoint,
                           data=json.dumps(backup_metadata),
                           headers=self.headers,

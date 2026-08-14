@@ -15,8 +15,6 @@
 import unittest
 from unittest import mock
 
-from oslo_serialization import jsonutils as json
-
 from freezerclient import exceptions
 from freezerclient.v2 import backups as backups_cli
 from freezerclient.v2.managers import backups
@@ -47,21 +45,6 @@ class TestBackupManager(unittest.TestCase):
         mock_requests.post.return_value = mock_response
         retval = self.b.create(backup_metadata={'backup': 'metadata'})
         self.assertEqual('qwerqwer', retval)
-
-    @mock.patch('freezerclient.v2.managers.backups.requests')
-    def test_create_with_project_id_ok(self, mock_requests):
-        mock_response = mock.Mock()
-        mock_response.status_code = 201
-        mock_response.json.return_value = {'backup_id': 'qwerqwer'}
-        mock_requests.post.return_value = mock_response
-        retval = self.b.create(backup_metadata={'backup': 'metadata'},
-                               project_id='project_1234')
-        self.assertEqual('qwerqwer', retval)
-        mock_requests.post.assert_called_with(
-            self.b.endpoint,
-            data=json.dumps({'backup': 'metadata'}),
-            headers=self.b.headers,
-            verify=self.b.verify)
 
     @mock.patch('freezerclient.v2.managers.backups.requests')
     def test_create_fail_when_api_return_error_code(self, mock_requests):
