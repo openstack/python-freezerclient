@@ -164,7 +164,6 @@ class TestBackupList(unittest.TestCase):
     def test_take_action_includes_status_column(self):
         self.app.client.backups.list.return_value = [{
             'backup_id': 'b1',
-            'backup_uuid': 'uuid1',
             'status': 'available',
             'backup_metadata': {
                 'hostname': 'host1',
@@ -181,5 +180,77 @@ class TestBackupList(unittest.TestCase):
 
         columns, data = self.cmd.take_action(parsed_args)
         self.assertIn('Status', columns)
+        self.assertNotIn('Backup UUID', columns)
         data_list = list(data)
-        self.assertEqual(data_list[0][5], 'available')
+        self.assertEqual('available', data_list[0][columns.index('Status')])
+        self.assertEqual('b1', data_list[0][columns.index('Backup ID')])
+
+
+class TestFormatBackup(unittest.TestCase):
+
+    def test_format_backup_with_backup_id(self):
+        backup = {
+            'backup_id': 'b1',
+            'project_id': 'p1',
+            'user_id': 'u1',
+            'status': 'available',
+            'backup_metadata': {'hostname': 'host1'}
+        }
+        columns, data = backups_cli.format_backup(backup)
+        self.assertEqual('Backup ID', columns[0])
+        self.assertEqual('b1', data[0])
+
+    def test_format_backup_with_backup_uuid_fallback(self):
+        backup = {
+            'backup_uuid': 'uuid1',
+            'project_id': 'p1',
+            'user_id': 'u1',
+            'status': 'available',
+            'backup_metadata': {'hostname': 'host1'}
+        }
+        columns, data = backups_cli.format_backup(backup)
+        self.assertEqual('Backup ID', columns[0])
+        self.assertEqual('uuid1', data[0])
+
+
+class TestBackupShow(unittest.TestCase):
+
+    def setUp(self):
+        self.app = mock.Mock()
+        self.app.client = mock.Mock()
+        self.cmd = backups_cli.BackupShow(self.app, mock.Mock())
+
+    def test_take_action(self):
+        parsed_args = mock.Mock()
+        parsed_args.backup_id = 'b1'
+        self.app.client.backups.get.return_value = {
+            'backup_id': 'b1',
+            'project_id': 'p1',
+            'user_id': 'u1',
+            'status': 'available',
+            'backup_metadata': {'hostname': 'host1'}
+        }
+        columns, data = self.cmd.take_action(parsed_args)
+        self.app.client.backups.get.assert_called_once_with('b1')
+        self.assertEqual('b1', data[0])
+
+    def test_take_action_not_found(self):
+        parsed_args = mock.Mock()
+        parsed_args.backup_id = 'b1'
+        self.app.client.backups.get.return_value = None
+        self.assertRaises(exceptions.ApiClientException,
+                          self.cmd.take_action, parsed_args)
+
+
+class TestBackupDelete(unittest.TestCase):
+
+    def setUp(self):
+        self.app = mock.Mock()
+        self.app.client = mock.Mock()
+        self.cmd = backups_cli.BackupDelete(self.app, mock.Mock())
+
+    def test_take_action(self):
+        parsed_args = mock.Mock()
+        parsed_args.backup_id = 'b1'
+        self.cmd.take_action(parsed_args)
+        self.app.client.backups.delete.assert_called_once_with('b1')

@@ -33,7 +33,7 @@ def format_backup(backup):
         'Metadata'
     )
     data = (
-        backup.get('backup_uuid'),
+        backup.get('backup_id') or backup.get('backup_uuid'),
         backup.get('project_id'),
         backup.get('user_id'),
         backup.get('status'),
@@ -46,12 +46,12 @@ class BackupShow(base.FreezerShowOne):
     """Show the metadata of a single backup"""
     def get_parser(self, prog_name):
         parser = super(BackupShow, self).get_parser(prog_name)
-        parser.add_argument(dest='backup_uuid',
+        parser.add_argument(dest='backup_id',
                             help='ID of the backup')
         return parser
 
     def take_action(self, parsed_args):
-        backup = self.client.backups.get(parsed_args.backup_uuid)
+        backup = self.client.backups.get(parsed_args.backup_id)
         if not backup:
             raise exceptions.ApiClientException('Backup not found')
 
@@ -92,7 +92,7 @@ class BackupList(base.FreezerLister):
                                            offset=parsed_args.offset,
                                            search=search)
 
-        columns = ('Backup ID', 'Backup UUID', 'Hostname', 'Path',
+        columns = ('Backup ID', 'Hostname', 'Path',
                    'Created at', 'Status', 'Level')
 
         # Print empty table if no backups found
@@ -104,8 +104,7 @@ class BackupList(base.FreezerLister):
                            key=lambda x: x.get('backup_metadata',
                                                {}).get('time_stamp', ''))
 
-        data = ((b.get('backup_id', ''),
-                 b.get('backup_uuid', ''),
+        data = ((b.get('backup_id') or b.get('backup_uuid', ''),
                  b.get('backup_metadata', {}).get('hostname', ''),
                  b.get('backup_metadata', {}).get('path_to_backup', ''),
                  datetime.datetime.fromtimestamp(
@@ -122,12 +121,12 @@ class BackupDelete(base.FreezerCommand):
     """Delete a backup from the api"""
     def get_parser(self, prog_name):
         parser = super(BackupDelete, self).get_parser(prog_name)
-        parser.add_argument(dest='backup_uuid',
-                            help='UUID of the backup')
+        parser.add_argument(dest='backup_id',
+                            help='ID of the backup')
         return parser
 
     def take_action(self, parsed_args):
-        self.client.backups.delete(parsed_args.backup_uuid)
+        self.client.backups.delete(parsed_args.backup_id)
 
 
 class BackupCreate(base.FreezerShowOne):
