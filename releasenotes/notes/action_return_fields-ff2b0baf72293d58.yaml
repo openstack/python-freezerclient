@@ -1,0 +1,17 @@
+---
+features:
+  - |
+    Client now returns all possible fields for Actions.
+    Optional fields are present in output only when a corresponsive Action
+    has a value defined for it.
+upgrade:
+  - |
+    Some columns in Action details have changed names for better
+    readability.
+    For example:
+      - Log_file -> Log File
+      - Remove_older_than -> Remove Older Than
+      - Max_retries_interval - > Max Retries Interval
+      - Max_retries -> Max Retries
+      - User_id -> User ID
+      - Project_id -> Project ID

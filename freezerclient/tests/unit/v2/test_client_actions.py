@@ -172,6 +172,62 @@ class TestFormatAction(unittest.TestCase):
         storage_index = columns.index('Storage')
         self.assertEqual('swift', data[storage_index])
 
+    def test_format_action_with_cindernative_extra_fields(self):
+        action = {
+            'action_id': 'test_id',
+            'freezer_action': {
+                'backup_name': 'test-incrementbackup',
+                'action': 'backup',
+                'mode': 'cindernative',
+                'incremental': True,
+                'cindernative_vol_id': '311c5ce6-3f99-4ee3-b8bf-b93e3110a099',
+                'fullbackup_rotation': 5,
+            },
+            'max_retries': 3,
+            'max_retries_interval': 60,
+        }
+        columns, data = actions_cmd.format_action(action)
+        self.assertIn('Cinder Native Volume ID', columns)
+        self.assertIn('Incremental', columns)
+        self.assertIn('Fullbackup Rotation', columns)
+
+        vol_idx = columns.index('Cinder Native Volume ID')
+        inc_idx = columns.index('Incremental')
+        rot_idx = columns.index('Fullbackup Rotation')
+
+        self.assertEqual('311c5ce6-3f99-4ee3-b8bf-b93e3110a099', data[vol_idx])
+        self.assertIs(True, data[inc_idx])
+        self.assertEqual(5, data[rot_idx])
+
+    def test_format_action_masks_passwords(self):
+        action = {
+            'action_id': 'act_123',
+            'freezer_action': {
+                'backup_name': 'my_backup',
+                'action': 'backup',
+                'mode': 'fs',
+                'ssh_password': 'secret_password_123',
+                'ftp_password': 'ftp_secret_456',
+                'secret_key': 'aws_secret_789',
+                'lvm_snapname': 'snap_vol1',
+            }
+        }
+        columns, data = actions_cmd.format_action(action)
+        self.assertIn('SSH Password', columns)
+        self.assertIn('FTP Password', columns)
+        self.assertIn('Secret Key', columns)
+        self.assertIn('LVM Snapshot Name', columns)
+
+        ssh_idx = columns.index('SSH Password')
+        ftp_idx = columns.index('FTP Password')
+        secret_idx = columns.index('Secret Key')
+        lvm_idx = columns.index('LVM Snapshot Name')
+
+        self.assertEqual('********', data[ssh_idx])
+        self.assertEqual('********', data[ftp_idx])
+        self.assertEqual('********', data[secret_idx])
+        self.assertEqual('snap_vol1', data[lvm_idx])
+
 
 class TestActionList(unittest.TestCase):
 
