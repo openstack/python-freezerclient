@@ -16,6 +16,7 @@ import unittest
 from unittest import mock
 
 from freezerclient import exceptions
+from freezerclient.v2 import actions as actions_cmd
 from freezerclient.v2.managers import actions
 
 
@@ -140,3 +141,133 @@ class TestActionManager(unittest.TestCase):
                           self.action_manager.update,
                           'd454beec-1f3c-4d11-aa1a-404116a40502',
                           {'status': 'bamboozled'})
+
+
+class TestFormatAction(unittest.TestCase):
+
+    def test_format_action_without_storage(self):
+        action = {
+            'action_id': 'test_id',
+            'freezer_action': {
+                'backup_name': 'test_backup',
+                'action': 'backup',
+                'mode': 'cindernative',
+            }
+        }
+        columns, data = actions_cmd.format_action(action)
+        storage_index = columns.index('Storage')
+        self.assertEqual('', data[storage_index])
+
+    def test_format_action_with_storage(self):
+        action = {
+            'action_id': 'test_id',
+            'freezer_action': {
+                'backup_name': 'test_backup',
+                'action': 'backup',
+                'mode': 'fs',
+                'storage': 'swift',
+            }
+        }
+        columns, data = actions_cmd.format_action(action)
+        storage_index = columns.index('Storage')
+        self.assertEqual('swift', data[storage_index])
+
+
+class TestActionList(unittest.TestCase):
+
+    def setUp(self):
+        self.app = mock.Mock()
+        self.app.client = mock.Mock()
+        self.action_list = actions_cmd.ActionList(self.app, mock.Mock())
+
+    def test_get_parser(self):
+        parser = self.action_list.get_parser('test')
+        self.assertEqual('Specify a limit for search query',
+                         parser._option_string_actions['--limit'].help)
+
+    def test_take_action_without_storage(self):
+        parsed_args = mock.Mock()
+        parsed_args.limit = 10
+        parsed_args.offset = 0
+        parsed_args.search = ''
+
+        self.app.client.actions.list.return_value = [{
+            'action_id': 'test_id',
+            'freezer_action': {
+                'backup_name': 'test_backup',
+                'action': 'backup',
+                'mode': 'cindernative',
+            }
+        }]
+
+        columns, data = self.action_list.take_action(parsed_args)
+        data_list = list(data)
+        self.assertEqual(1, len(data_list))
+        storage_index = columns.index('Storage')
+        self.assertEqual('', data_list[0][storage_index])
+
+    def test_take_action_with_storage(self):
+        parsed_args = mock.Mock()
+        parsed_args.limit = 10
+        parsed_args.offset = 0
+        parsed_args.search = ''
+
+        self.app.client.actions.list.return_value = [{
+            'action_id': 'test_id',
+            'freezer_action': {
+                'backup_name': 'test_backup',
+                'action': 'backup',
+                'mode': 'fs',
+                'storage': 'swift',
+            }
+        }]
+
+        columns, data = self.action_list.take_action(parsed_args)
+        data_list = list(data)
+        self.assertEqual(1, len(data_list))
+        storage_index = columns.index('Storage')
+        self.assertEqual('swift', data_list[0][storage_index])
+
+    def test_take_action_empty(self):
+        parsed_args = mock.Mock()
+        parsed_args.limit = 10
+        parsed_args.offset = 0
+        parsed_args.search = ''
+
+        self.app.client.actions.list.return_value = []
+
+        columns, data = self.action_list.take_action(parsed_args)
+        data_list = list(data)
+        self.assertEqual(1, len(data_list))
+        storage_index = columns.index('Storage')
+        self.assertEqual('', data_list[0][storage_index])
+
+
+class TestActionShow(unittest.TestCase):
+
+    def setUp(self):
+        self.app = mock.Mock()
+        self.app.client = mock.Mock()
+        self.action_show = actions_cmd.ActionShow(self.app, mock.Mock())
+
+    def test_take_action(self):
+        parsed_args = mock.Mock()
+        parsed_args.action_id = 'test_id'
+        self.app.client.actions.get.return_value = {
+            'action_id': 'test_id',
+            'freezer_action': {
+                'backup_name': 'test_backup',
+                'action': 'backup',
+                'mode': 'cindernative',
+            }
+        }
+        columns, data = self.action_show.take_action(parsed_args)
+        storage_index = columns.index('Storage')
+        self.assertEqual('', data[storage_index])
+
+    def test_take_action_not_found(self):
+        parsed_args = mock.Mock()
+        parsed_args.action_id = 'not_found'
+        self.app.client.actions.get.return_value = None
+        self.assertRaises(exceptions.ApiClientException,
+                          self.action_show.take_action, parsed_args)
