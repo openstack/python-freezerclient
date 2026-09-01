@@ -1,0 +1,8 @@
+---
+other:
+  - |
+    Client no longer returns ``swift`` as storage name for swift backend, when
+    no storage name is defined in action.
+    Despite ``swift`` remains the default value for Freezer Agent, when no
+    storage name is defined for the action, this value can be overriden by
+    config or runtime argument passed to the Agent.

@@ -46,7 +46,7 @@ def format_action(action):
         action.get('freezer_action', {}).get('action', 'backup'),
         action.get('freezer_action', {}).get('mode', 'fs'),
         action.get('freezer_action', {}).get('path_to_backup', ''),
-        action.get('freezer_action', {}).get('storage', 'swift'),
+        action.get('freezer_action', {}).get('storage', ''),
         action.get('freezer_action', {}).get('snapshot', 'False'),
         action.get('freezer_action', {}).get('container', ''),
         action.get('freezer_action', {}).get('log_file', ''),
@@ -134,7 +134,7 @@ class ActionList(base.FreezerLister):
                      action.get('freezer_action', {}).get(
                          'path_to_backup', ''),
                      action.get('freezer_action', {}).get('mode', 'fs'),
-                     action.get('freezer_action', {}).get('storage', 'swift'),
+                     action.get('freezer_action', {}).get('storage', ''),
                      action.get('freezer_action', {}).get('snapshot', 'False')
                      ) for action in actions)
 
