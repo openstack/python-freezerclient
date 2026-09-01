@@ -260,14 +260,14 @@ freezer backup-delete
 
 .. code-block:: console
 
-   usage: freezer backup-delete [-h] backup_uuid
+   usage: freezer backup-delete [-h] backup_id
 
 Delete a backup from the api
 
 **Positional arguments:**
 
-``backup_uuid``
-  UUID of the backup
+``backup_id``
+  ID of the backup
 
 **Optional arguments:**
 
@@ -312,13 +312,13 @@ freezer backup-show
    usage: freezer backup-show [-h] [-f {html,json,shell,table,value,yaml}]
                               [-c COLUMN] [--max-width <integer>] [--fit-width]
                               [--print-empty] [--noindent] [--prefix PREFIX]
-                              backup_uuid
+                              backup_id
 
 Show the metadata of a single backup
 
 **Positional arguments:**
 
-``backup_uuid``
+``backup_id``
   ID of the backup
 
 **Optional arguments:**

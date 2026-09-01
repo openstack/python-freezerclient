@@ -1,0 +1,8 @@
+---
+deprecations:
+  - |
+    Column ``Backup UUID`` for backups has been removed from the client.
+    Column ``Backup ID`` remains the only one representing the ID of
+    the backup.
+    UUID was relevant in Freezer API v1 which is now removed. It was always
+    returning an empty value when used with API v2.
